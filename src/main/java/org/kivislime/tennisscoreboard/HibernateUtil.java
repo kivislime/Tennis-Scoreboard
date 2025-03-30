@@ -4,18 +4,23 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 public class HibernateUtil {
-    private static SessionFactory sessionFactory;
 
-    public static SessionFactory buildSessionFactory() {
-        if (sessionFactory != null) {
-            return sessionFactory;
+    private HibernateUtil() {
+    }
+
+    private static class SessionFactoryHolder {
+        private static final SessionFactory SESSION_FACTORY = buildSessionFactory();
+
+        private static SessionFactory buildSessionFactory() { // Holder pattern
+            //TODO: try catch?
+            Configuration configuration = new Configuration();
+            configuration.configure("hibernate.cfg.xml");
+            return configuration.buildSessionFactory();
         }
-        //TODO: try catch?
-        Configuration config = new Configuration();
-        config.configure("hibernate.cfg.xml");
-        sessionFactory = config.buildSessionFactory();
-        return sessionFactory;
+    }
+
+    public static SessionFactory getSessionFactory() {
+        return SessionFactoryHolder.SESSION_FACTORY;
     }
 
 }
-
