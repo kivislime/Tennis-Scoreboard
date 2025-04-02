@@ -14,4 +14,3 @@ public class JsonUtil {
         }
     }
 }
-//feat(match): add match entity, controller, service, repository, and DTO
