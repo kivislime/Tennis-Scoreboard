@@ -17,4 +17,11 @@ public class MatchService {
                 .map(matchMapper::matchToDto)
                 .collect(Collectors.toList());
     }
+
+    public List<MatchDto> getMatchesByPlayerName(String playerName) {
+        return matchRepository.getMatchesByPlayerName(playerName)
+                .stream()
+                .map(matchMapper::matchToDto)
+                .collect(Collectors.toList());
+    }
 }
