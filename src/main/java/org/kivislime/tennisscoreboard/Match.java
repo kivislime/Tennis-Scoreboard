@@ -2,14 +2,12 @@ package org.kivislime.tennisscoreboard;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "matches")
 public class Match {
@@ -27,5 +25,5 @@ public class Match {
 
     @ManyToOne
     @JoinColumn(name = "winner", nullable = false)
-    Player winner;
+    Player winnerPlayer;
 }
