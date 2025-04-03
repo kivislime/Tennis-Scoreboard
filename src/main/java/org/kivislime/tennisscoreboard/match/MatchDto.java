@@ -1,8 +1,9 @@
-package org.kivislime.tennisscoreboard;
+package org.kivislime.tennisscoreboard.match;
 
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import org.kivislime.tennisscoreboard.player.PlayerDto;
 
 @Value
 @Builder

@@ -1,4 +1,6 @@
-package org.kivislime.tennisscoreboard;
+package org.kivislime.tennisscoreboard.match;
+
+import org.kivislime.tennisscoreboard.MatchMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;

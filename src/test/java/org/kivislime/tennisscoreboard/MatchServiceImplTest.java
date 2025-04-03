@@ -2,6 +2,11 @@ package org.kivislime.tennisscoreboard;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kivislime.tennisscoreboard.match.Match;
+import org.kivislime.tennisscoreboard.match.MatchDto;
+import org.kivislime.tennisscoreboard.match.MatchRepositoryImpl;
+import org.kivislime.tennisscoreboard.match.MatchServiceImpl;
+import org.kivislime.tennisscoreboard.player.Player;
 
 import java.util.Arrays;
 import java.util.List;
