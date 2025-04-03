@@ -2,11 +2,10 @@ package org.kivislime.tennisscoreboard;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kivislime.tennisscoreboard.match.Match;
-import org.kivislime.tennisscoreboard.match.MatchDto;
-import org.kivislime.tennisscoreboard.match.MatchRepositoryImpl;
-import org.kivislime.tennisscoreboard.match.MatchServiceImpl;
+import org.kivislime.tennisscoreboard.match.*;
 import org.kivislime.tennisscoreboard.player.Player;
+import org.kivislime.tennisscoreboard.player.PlayerService;
+import org.kivislime.tennisscoreboard.player.PlayerServiceImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,13 +16,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MatchServiceImplTest {
-    private MatchRepositoryImpl mockRepository;
+    private MatchRepository mockMatchRepository;
+    private PlayerService mockPlayerService;
     private MatchServiceImpl matchServiceImpl;
 
     @BeforeEach
     void setUp() {
-        mockRepository = mock(MatchRepositoryImpl.class);
-        matchServiceImpl = new MatchServiceImpl(mockRepository);
+        mockMatchRepository = mock(MatchRepositoryImpl.class);
+        mockPlayerService = mock(PlayerServiceImpl.class);
+        matchServiceImpl = new MatchServiceImpl(mockMatchRepository, mockPlayerService);
     }
 
     @Test
@@ -35,7 +36,7 @@ class MatchServiceImplTest {
         Match match1 = new Match(1L, player1, player2, player1);
         Match match2 = new Match(2L, player1, player3, player3);
 
-        when(mockRepository.getMatches()).thenReturn(Arrays.asList(match1, match2));
+        when(mockMatchRepository.getMatches()).thenReturn(Arrays.asList(match1, match2));
 
         List<MatchDto> dtos = matchServiceImpl.getMatches();
 
@@ -55,7 +56,7 @@ class MatchServiceImplTest {
         Match match1 = new Match(1L, player1, player2, player1);
         Match match2 = new Match(2L, player1, player3, player3);
 
-        when(mockRepository.getMatchesByPlayerName("Kohan")).thenReturn(List.of(match2));
+        when(mockMatchRepository.getMatchesByPlayerName("Kohan")).thenReturn(List.of(match2));
 
         List<MatchDto> dtos = matchServiceImpl.getMatchesByPlayerName("Kohan");
 
