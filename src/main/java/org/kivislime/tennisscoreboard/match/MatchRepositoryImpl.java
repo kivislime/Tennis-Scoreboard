@@ -1,8 +1,9 @@
-package org.kivislime.tennisscoreboard;
+package org.kivislime.tennisscoreboard.match;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.kivislime.tennisscoreboard.HibernateUtil;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package org.kivislime.tennisscoreboard;
+package org.kivislime.tennisscoreboard.player;
 
 import lombok.Builder;
 import lombok.Value;

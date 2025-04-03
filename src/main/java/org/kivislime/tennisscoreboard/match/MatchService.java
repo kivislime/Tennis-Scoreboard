@@ -1,4 +1,4 @@
-package org.kivislime.tennisscoreboard;
+package org.kivislime.tennisscoreboard.match;
 
 import java.util.List;
 
