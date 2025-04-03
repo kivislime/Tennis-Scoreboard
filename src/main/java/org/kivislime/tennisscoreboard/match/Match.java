@@ -12,9 +12,6 @@ import org.kivislime.tennisscoreboard.player.Player;
 @Entity
 @Table(name = "matches")
 public class Match {
-    @ManyToOne
-    @JoinColumn(name = "winner", nullable = false)
-    Player winnerPlayer;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,4 +21,7 @@ public class Match {
     @ManyToOne
     @JoinColumn(name = "player2", nullable = false)
     private Player secondPlayer;
+    @ManyToOne
+    @JoinColumn(name = "winner", nullable = false)
+    Player winnerPlayer;
 }
