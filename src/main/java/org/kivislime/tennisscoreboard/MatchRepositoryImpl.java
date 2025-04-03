@@ -6,7 +6,7 @@ import org.hibernate.query.Query;
 
 import java.util.List;
 
-public class MatchRepositoryImpl {
+public class MatchRepositoryImpl implements MatchRepository {
 
     public List<Match> getMatches() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {

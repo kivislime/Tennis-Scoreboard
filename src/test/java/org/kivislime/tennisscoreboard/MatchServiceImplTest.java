@@ -11,14 +11,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class MatchServiceTest {
+class MatchServiceImplTest {
     private MatchRepositoryImpl mockRepository;
-    private MatchService matchService;
+    private MatchServiceImpl matchServiceImpl;
 
     @BeforeEach
     void setUp() {
         mockRepository = mock(MatchRepositoryImpl.class);
-        matchService = new MatchService(mockRepository);
+        matchServiceImpl = new MatchServiceImpl(mockRepository);
     }
 
     @Test
@@ -32,7 +32,7 @@ class MatchServiceTest {
 
         when(mockRepository.getMatches()).thenReturn(Arrays.asList(match1, match2));
 
-        List<MatchDto> dtos = matchService.getMatches();
+        List<MatchDto> dtos = matchServiceImpl.getMatches();
 
         assertNotNull(dtos);
         assertEquals(2, dtos.size());
@@ -52,7 +52,7 @@ class MatchServiceTest {
 
         when(mockRepository.getMatchesByPlayerName("Kohan")).thenReturn(List.of(match2));
 
-        List<MatchDto> dtos = matchService.getMatchesByPlayerName("Kohan");
+        List<MatchDto> dtos = matchServiceImpl.getMatchesByPlayerName("Kohan");
 
         assertNotNull(dtos, "List DTO needs to be not null");
         assertEquals(1, dtos.size(), "Expect 1 match");
@@ -64,7 +64,7 @@ class MatchServiceTest {
 //    void testGetMatchesByPlayerNameNotFound() {
 //        when(mockRepository.getMatchesByPlayerName("NonExisting")).thenReturn(Collections.emptyList());
 //
-//        List<MatchDto> dtos = matchService.getMatchesByPlayerName("NonExisting");
+//        List<MatchDto> dtos = matchServiceImpl.getMatchesByPlayerName("NonExisting");
 //
 //        assertNotNull(dtos, "List DTO needs to be not null");
 //        assertTrue(dtos.isEmpty(), );

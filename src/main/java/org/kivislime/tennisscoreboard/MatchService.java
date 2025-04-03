@@ -1,27 +1,9 @@
 package org.kivislime.tennisscoreboard;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class MatchService {
-    private final MatchRepositoryImpl matchRepository;
-    private final MatchMapper matchMapper = MatchMapper.INSTANCE;
+public interface MatchService {
+    List<MatchDto> getMatches();
 
-    public MatchService(MatchRepositoryImpl matchRepository) {
-        this.matchRepository = matchRepository;
-    }
-
-    public List<MatchDto> getMatches() {
-        return matchRepository.getMatches()
-                .stream()
-                .map(matchMapper::matchToDto)
-                .collect(Collectors.toList());
-    }
-
-    public List<MatchDto> getMatchesByPlayerName(String playerName) {
-        return matchRepository.getMatchesByPlayerName(playerName)
-                .stream()
-                .map(matchMapper::matchToDto)
-                .collect(Collectors.toList());
-    }
+    List<MatchDto> getMatchesByPlayerName(String playerName);
 }
