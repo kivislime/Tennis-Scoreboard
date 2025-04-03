@@ -31,12 +31,13 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.5.3.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
-
     implementation 'org.hibernate:hibernate-core:6.1.5.Final'
     implementation 'com.h2database:h2:2.2.220'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.2'
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+    testImplementation("org.mockito:mockito-junit-jupiter:4.11.0")
 }
 
 test {
