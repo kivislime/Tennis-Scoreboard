@@ -1,5 +1,6 @@
 package org.kivislime.tennisscoreboard;
 
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,13 +12,20 @@ import java.util.Collections;
 import java.util.List;
 
 @WebServlet("/matches")
-public class MatchesList extends HttpServlet {
+public class MatchesListServlet extends HttpServlet {
+    MatchService matchService;
+
+    @Override
+    public void init() throws ServletException {
+        ServletContext context = getServletContext();
+        matchService = (MatchService) context.getAttribute("matchService");
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         //TODO: Context listener? Move service to context. Move mapper to context from service?
         //TODO: encoding?  req.setCharacterEncoding("UTF-8");
-        MatchService matchesService = new MatchService(new MatchRepositoryImpl());
 
         String page = req.getParameter("page");
         String playerName = req.getParameter("filter_by_player_name");
@@ -29,9 +37,9 @@ public class MatchesList extends HttpServlet {
         }
 
         if (playerName != null && !playerName.isEmpty()) {
-            matchDtoList = matchesService.getMatchesByPlayerName(playerName);
+            matchDtoList = matchService.getMatchesByPlayerName(playerName);
         } else {
-            matchDtoList = matchesService.getMatches();
+            matchDtoList = matchService.getMatches();
         }
 
         String allMatches = JsonUtil.toJson(matchDtoList);
