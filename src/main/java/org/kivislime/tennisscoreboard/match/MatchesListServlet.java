@@ -14,7 +14,7 @@ import java.util.List;
 
 @WebServlet("/matches")
 public class MatchesListServlet extends HttpServlet {
-    MatchService matchService;
+    private MatchService matchService;
 
     @Override
     public void init() throws ServletException {
