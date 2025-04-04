@@ -2,6 +2,8 @@ package org.kivislime.tennisscoreboard;
 
 import org.kivislime.tennisscoreboard.match.Match;
 import org.kivislime.tennisscoreboard.match.MatchDto;
+import org.kivislime.tennisscoreboard.match.MatchScore;
+import org.kivislime.tennisscoreboard.match.MatchScoreDto;
 import org.kivislime.tennisscoreboard.player.Player;
 import org.kivislime.tennisscoreboard.player.PlayerDto;
 import org.mapstruct.Mapper;
@@ -19,4 +21,6 @@ public interface MatchMapper {
     MatchDto matchToDto(Match match);
 
     PlayerDto playerToDto(Player player);
+
+    MatchScoreDto scoreToDto(MatchScore score);
 }
