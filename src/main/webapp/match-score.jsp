@@ -14,41 +14,45 @@
             --text-color: #333;
             --font-family: 'Segoe UI', sans-serif;
         }
-
         body {
-            font-family: var(--font-family);
-            background-color: var(--background-color);
+            font-family: var(--font-family), serif;
+            background-color: #eef2f7;
             text-align: center;
             padding: 50px 0;
             margin: 0;
         }
-
         .score-container {
             background-color: var(--container-bg);
             padding: 40px;
             border-radius: 16px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
+            max-width: 700px;
             width: 90%;
             margin: 0 auto;
         }
-
         h2 {
             margin-bottom: 20px;
             font-size: 2em;
             color: var(--text-color);
         }
 
-        .player {
-            font-size: 24px;
-            margin: 10px 0;
-            color: var(--text-color);
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
+        .score-table th, .score-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .score-table th {
+            background: #f9fafc;
+        }
         button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 8px 12px;
+            font-size: 14px;
             border: none;
             border-radius: 8px;
             background-color: var(--primary-color);
@@ -56,31 +60,59 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-
         button:hover {
             background-color: var(--hover-color);
         }
-
         @media (max-width: 600px) {
             .score-container {
                 padding: 20px;
             }
 
+            .score-table td, .score-table th {
+                font-size: 14px;
+                padding: 8px;
+            }
             button {
                 width: 100%;
+                margin-top: 4px;
             }
         }
     </style>
 </head>
 <body>
-
 <div class="score-container">
     <h2>Счёт матча</h2>
-    <div class="player" id="player1">Игрок 1: 0</div>
-    <div class="player" id="player2">Игрок 2: 0</div>
-
-    <button onclick="addScore(1)">+1 Игроку 1</button>
-    <button onclick="addScore(2)">+1 Игроку 2</button>
+    <table class="score-table">
+        <thead>
+        <tr>
+            <th>Имя игрока</th>
+            <th>Сеты</th>
+            <th>Игры</th>
+            <th>Очки</th>
+            <th>+1 очко</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td id="player1Name">Игрок 1</td>
+            <td id="player1Sets">0</td>
+            <td id="player1Games">0</td>
+            <td id="player1Points">0</td>
+            <td>
+                <button onclick="addScore(1)">+1</button>
+            </td>
+        </tr>
+        <tr>
+            <td id="player2Name">Игрок 2</td>
+            <td id="player2Sets">0</td>
+            <td id="player2Games">0</td>
+            <td id="player2Points">0</td>
+            <td>
+                <button onclick="addScore(2)">+1</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 
 <script>
@@ -88,9 +120,17 @@
     const uuid = params.get("uuid");
 
     function updateScoreboard(data) {
-        const {firstPlayerScore, secondPlayerScore, match} = data;
-        document.getElementById('player1').textContent = `\${match.firstPlayer.name}: \${firstPlayerScore}`;
-        document.getElementById('player2').textContent = `\${match.secondPlayer.name}: \${secondPlayerScore}`;
+        const {firstPlayerScore, secondPlayerScore, matchDto} = data;
+
+        document.getElementById("player1Name").textContent = `\${matchDto.firstPlayer.name}`;
+        document.getElementById("player1Sets").textContent = `\${firstPlayerScore.sets}`;
+        document.getElementById("player1Games").textContent = `\${firstPlayerScore.games}`;
+        document.getElementById("player1Points").textContent = `\${firstPlayerScore.points}`;
+
+        document.getElementById("player2Name").textContent = `\${matchDto.secondPlayer.name}`;
+        document.getElementById("player2Sets").textContent = `\${secondPlayerScore.sets}`;
+        document.getElementById("player2Games").textContent = `\${secondPlayerScore.games}`;
+        document.getElementById("player2Points").textContent = `\${secondPlayerScore.points}`;
     }
 
     function fetchScore() {
@@ -121,6 +161,5 @@
         alert("UUID матча не найден в URL");
     }
 </script>
-
 </body>
 </html>
