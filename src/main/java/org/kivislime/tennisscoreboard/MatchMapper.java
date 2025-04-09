@@ -1,9 +1,6 @@
 package org.kivislime.tennisscoreboard;
 
-import org.kivislime.tennisscoreboard.match.Match;
-import org.kivislime.tennisscoreboard.match.MatchDto;
-import org.kivislime.tennisscoreboard.match.MatchScore;
-import org.kivislime.tennisscoreboard.match.MatchScoreDto;
+import org.kivislime.tennisscoreboard.match.*;
 import org.kivislime.tennisscoreboard.player.Player;
 import org.kivislime.tennisscoreboard.player.PlayerDto;
 import org.mapstruct.Mapper;
@@ -22,5 +19,9 @@ public interface MatchMapper {
 
     PlayerDto playerToDto(Player player);
 
-    MatchScoreDto scoreToDto(MatchScore score);
+    //TODO: изменить логику проверок. Какие параметры? Правильно ли соотносятся игрок 1 и 2 в по матчу
+    MatchScoreDto matchScoreToDto(MatchScore score);
+
+    @Mapping(source = "points.value", target = "points")
+    PlayerScoreDto playerScoreToDto(PlayerScore playerScore);
 }
