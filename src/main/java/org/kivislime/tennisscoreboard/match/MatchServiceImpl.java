@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class MatchServiceImpl implements MatchService {
     private final MatchRepository matchRepository;
     private final MatchMapper matchMapper = MatchMapper.INSTANCE;
-    //TODO: or Map<uuid,Match> - ?
+    //TODO: Удалять матч после того ушли со страницы? хмхм
     private static Map<UUID, MatchScore> currentMatches = Collections.synchronizedMap(new HashMap<>());
     private final PlayerService playerService;
 
@@ -53,7 +53,7 @@ public class MatchServiceImpl implements MatchService {
         UUID uuid = UUID.randomUUID();
         MatchDto newMatch = new MatchDto(null, firstPlayerDto, secondPlayerDto, null);
 
-        MatchScore matchScore = new MatchScore(newMatch, 0L, 0L);
+        MatchScore matchScore = new MatchScore(new PlayerScore(), new PlayerScore(), newMatch);
 
         currentMatches.put(uuid, matchScore);
 
@@ -64,29 +64,40 @@ public class MatchServiceImpl implements MatchService {
     public MatchScoreDto getLiveMatchScore(String matchUuid) {
         UUID uuid = UUID.fromString(matchUuid);
         return Optional.ofNullable(currentMatches.get(uuid))
-                .map(matchMapper::scoreToDto)
+                .map(matchMapper::matchScoreToDto)
                 .orElseThrow(() -> new RuntimeException("Match score not found for id: " + matchUuid));
     }
 
     @Override
-    public MatchScoreDto increaseMatchScore(String matchId, String playerName) {
+    public MatchScoreDto handleScoring(String matchId, Integer playerNumber) {
         MatchScore matchScore = currentMatches.get(UUID.fromString(matchId));
 
         if (matchScore == null) {
             throw new RuntimeException("Match score not found for id: " + matchId);
         }
 
-        MatchDto match = matchScore.getMatch();
         //TODO: изменить логику проверок. Какие параметры? Правильно ли соотносятся игрок 1 и 2 в по матчу
-        // и тут в incrementFirstPlayerScore incrementSecondPlayerScore? Не будет ли первый метод увеличивать второму игроку счет?
-        if (playerName.contains("player1")) {
-            matchScore.incrementFirstPlayerScore();
-        } else if (playerName.contains("player2")) {
-            matchScore.incrementSecondPlayerScore();
-        } else {
-            throw new RuntimeException("Player name" + playerName + " not found in match id: : " + matchId);
+        MatchDto match = matchScore.getMatchDto();
+        PlayerScore firstPlayerScore = matchScore.getFirstPlayerScore();
+        PlayerScore secondPlayerScore = matchScore.getSecondPlayerScore();
+
+        matchScore.processPointWinner(playerNumber);
+
+        if (firstPlayerScore.getSets() >= MatchScore.MAX_SETS_FOR_WIN) {
+            return buildFinishedMatchScoreDto(match, match.getFirstPlayer(), firstPlayerScore, secondPlayerScore);
+        } else if (secondPlayerScore.getSets() >= MatchScore.MAX_SETS_FOR_WIN) {
+            return buildFinishedMatchScoreDto(match, match.getSecondPlayer(), firstPlayerScore, secondPlayerScore);
         }
-        //TODO: if match end logic
-        return matchMapper.scoreToDto(matchScore);
+
+        return matchMapper.matchScoreToDto(matchScore);
     }
+
+    private MatchScoreDto buildFinishedMatchScoreDto(MatchDto match, PlayerDto winner, PlayerScore first, PlayerScore second) {
+        MatchDto resultMatchDto = new MatchDto(null, match.getFirstPlayer(), match.getSecondPlayer(), winner);
+        return new MatchScoreDto(resultMatchDto,
+                matchMapper.playerScoreToDto(first),
+                matchMapper.playerScoreToDto(second));
+    }
+
 }
+

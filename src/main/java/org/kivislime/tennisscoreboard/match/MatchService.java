@@ -12,5 +12,5 @@ public interface MatchService {
 
     MatchScoreDto getLiveMatchScore(String matchUuid);
 
-    MatchScoreDto increaseMatchScore(String matchId, String playerName);
+    MatchScoreDto handleScoring(String matchId, Integer playerNumber);
 }
