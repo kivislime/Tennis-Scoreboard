@@ -49,10 +49,17 @@ public class MatchScoreServlet extends HttpServlet {
             return;
         }
 
-        //TODO: if match end?
-        MatchScoreDto matchScoreDto = matchService.increaseMatchScore(matchId, playerNumber);
-        String matchScoreJson = JsonUtil.toJson(matchScoreDto);
-        resp.setStatus(HttpServletResponse.SC_OK);
-        resp.getWriter().write(matchScoreJson);
+        //TODO: if match end? may be returning in dto field "hasWinner"? Dont check winner field in controller? ask gpt
+        try {
+            Integer playerNumberInt = Integer.parseInt(playerNumber);
+            MatchScoreDto matchScoreDto = matchService.handleScoring(matchId, playerNumberInt);
+            String matchScoreJson = JsonUtil.toJson(matchScoreDto);
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.getWriter().write(matchScoreJson);
+        } catch (NumberFormatException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            throw new RuntimeException(e);
+        }
+
     }
 }

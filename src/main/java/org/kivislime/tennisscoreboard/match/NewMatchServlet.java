@@ -22,7 +22,6 @@ public class NewMatchServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json");
         String firstPlayerName = req.getParameter("first_player_name");
         String secondPlayerName = req.getParameter("second_player_name");
 
@@ -42,7 +41,7 @@ public class NewMatchServlet extends HttpServlet {
         UUID matchId = matchService.createLiveMatchSession(firstPlayerName, secondPlayerName);
         String matchIdString = matchId.toString();
 
-        resp.sendRedirect(req.getContextPath() + "/match-score?uuid=" + matchIdString);
+        resp.sendRedirect(req.getContextPath() + "/match-score.jsp?uuid=" + matchIdString);
 
         //TODO: remove, or add logger
         System.out.println("New match UUID: " + matchIdString);
