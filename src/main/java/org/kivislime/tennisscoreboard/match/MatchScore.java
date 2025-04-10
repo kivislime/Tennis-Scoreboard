@@ -13,15 +13,14 @@ public final class MatchScore {
     public static final int GAMES_DIFFERENCE_TO_WIN_SET = 2;
     public static final int GAMES_BEFORE_TIE_BREAK = 6;
     public static final int MAX_SETS_FOR_WIN = 2;
-    public static final int FIRST_PLAYER_NUMBER = 1;
 
     private final PlayerScore firstPlayerScore;
     private final PlayerScore secondPlayerScore;
     private final MatchDto matchDto;
 
-    public void processPointWinner(Integer numPlayerWinnerPoint) {
+    public void processPointWinner(PlayerNumber numWinnerPoint) {
 
-        if (numPlayerWinnerPoint.equals(FIRST_PLAYER_NUMBER)) {
+        if (numWinnerPoint == PlayerNumber.FIRST) {
             processPoints(firstPlayerScore, secondPlayerScore);
         } else {
             processPoints(secondPlayerScore, firstPlayerScore);

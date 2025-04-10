@@ -19,7 +19,6 @@ public class MatchServiceImpl implements MatchService {
     private static Map<UUID, MatchScore> currentMatches = Collections.synchronizedMap(new HashMap<>());
     private final PlayerService playerService;
 
-
     public MatchServiceImpl(MatchRepository matchRepository, PlayerService playerService) {
         this.matchRepository = matchRepository;
         this.playerService = playerService;
@@ -74,8 +73,9 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public MatchScoreDto handleScoring(String matchId, Integer playerNumber) {
-        MatchScore matchScore = currentMatches.get(UUID.fromString(matchId));
+    public MatchScoreDto handleScoring(String matchId, PlayerNumber playerNumber) {
+        UUID uuid = UUID.fromString(matchId);
+        MatchScore matchScore = currentMatches.get(uuid);
 
         if (matchScore == null) {
             throw new RuntimeException("Match score not found for id: " + matchId);
@@ -89,20 +89,32 @@ public class MatchServiceImpl implements MatchService {
         matchScore.processPointWinner(playerNumber);
 
         if (firstPlayerScore.getSets() >= MatchScore.MAX_SETS_FOR_WIN) {
-            return buildFinishedMatchScoreDto(match, match.getFirstPlayer(), firstPlayerScore, secondPlayerScore);
+            return buildFinishedMatchScoreDto(match, PlayerNumber.FIRST, firstPlayerScore, secondPlayerScore);
         } else if (secondPlayerScore.getSets() >= MatchScore.MAX_SETS_FOR_WIN) {
-            return buildFinishedMatchScoreDto(match, match.getSecondPlayer(), firstPlayerScore, secondPlayerScore);
+            return buildFinishedMatchScoreDto(match, PlayerNumber.SECOND, firstPlayerScore, secondPlayerScore);
         }
 
         return matchMapper.matchScoreToDto(matchScore);
     }
 
-    private MatchScoreDto buildFinishedMatchScoreDto(MatchDto match, PlayerDto winner, PlayerScore first, PlayerScore second) {
-        MatchDto resultMatchDto = new MatchDto(null, match.getFirstPlayer(), match.getSecondPlayer(), winner);
+    private MatchScoreDto buildFinishedMatchScoreDto(MatchDto match, PlayerNumber winner, PlayerScore first, PlayerScore second) {
+        PlayerDto firstPlayerDto = playerService.addPlayer(match.getFirstPlayer().getName());
+        PlayerDto secondPlayerDto = playerService.addPlayer(match.getSecondPlayer().getName());
+
+        Player firstPlayer = playerMapper.playerDtoToPlayer(firstPlayerDto);
+        Player secondPlayer = playerMapper.playerDtoToPlayer(secondPlayerDto);
+
+        Match resultMatch = matchRepository.addMatch(new Match(null,
+                firstPlayer,
+                secondPlayer,
+                winner == PlayerNumber.FIRST ? firstPlayer : secondPlayer));
+
+
+        MatchDto resultMatchDto = matchMapper.matchToDto(resultMatch);
+
         return new MatchScoreDto(resultMatchDto,
                 playerScoreMapper.playerScoreToDto(first),
                 playerScoreMapper.playerScoreToDto(second));
     }
-
 }
 

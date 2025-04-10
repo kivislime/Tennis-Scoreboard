@@ -42,17 +42,26 @@ public class MatchScoreServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         String matchId = req.getParameter("uuid");
-        String playerNumber = req.getParameter("player_number");
+        String playerNumberStr = req.getParameter("player_number");
 
-        if (matchId == null || playerNumber == null || matchId.isBlank() || playerNumber.isBlank()) {
+        if (matchId == null || playerNumberStr == null || matchId.isBlank() || playerNumberStr.isBlank()) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         //TODO: if match end? may be returning in dto field "hasWinner"? Dont check winner field in controller? ask gpt
         try {
-            Integer playerNumberInt = Integer.parseInt(playerNumber);
-            MatchScoreDto matchScoreDto = matchService.handleScoring(matchId, playerNumberInt);
+            Integer playerNumberInt = Integer.parseInt(playerNumberStr);
+            PlayerNumber playerNumber;
+            if (playerNumberInt.equals(1)) {
+                playerNumber = PlayerNumber.FIRST;
+            } else if (playerNumberInt.equals(2)) {
+                playerNumber = PlayerNumber.SECOND;
+            } else {
+                throw new RuntimeException("Invalid player number");
+            }
+
+            MatchScoreDto matchScoreDto = matchService.handleScoring(matchId, playerNumber);
             String matchScoreJson = JsonUtil.toJson(matchScoreDto);
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write(matchScoreJson);
