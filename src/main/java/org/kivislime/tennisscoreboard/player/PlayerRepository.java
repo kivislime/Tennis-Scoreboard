@@ -5,5 +5,5 @@ import java.util.Optional;
 public interface PlayerRepository {
     Optional<Player> getPlayer(String name);
 
-    Optional<Player> addPlayer(String playerName);
+    Player addPlayer(Player player);
 }

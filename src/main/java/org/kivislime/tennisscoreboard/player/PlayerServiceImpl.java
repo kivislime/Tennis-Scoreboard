@@ -1,13 +1,12 @@
 package org.kivislime.tennisscoreboard.player;
 
-import org.kivislime.tennisscoreboard.MatchMapper;
+import org.kivislime.tennisscoreboard.PlayerMapper;
 
 import java.util.Optional;
 
 public class PlayerServiceImpl implements PlayerService {
     private final PlayerRepository playerRepository;
-    //TODO: MatchMapper include in all services? Util class?
-    private final MatchMapper matchMapper = MatchMapper.INSTANCE;
+    private final PlayerMapper playerMapper = PlayerMapper.INSTANCE;
 
 
     public PlayerServiceImpl(PlayerRepository playerRepository) {
@@ -16,13 +15,16 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public PlayerDto addPlayer(String playerName) {
-        //TODO: need to rework
-        return null;
+        Player playerResult = playerRepository.addPlayer(Player.builder()
+                .name(playerName)
+                .build());
+
+        return playerMapper.playerToDto(playerResult);
     }
 
     @Override
     public Optional<PlayerDto> getPlayer(String playerName) {
         return playerRepository.getPlayer(playerName)
-                .map(matchMapper::playerToDto);
+                .map(playerMapper::playerToDto);
     }
 }
