@@ -1,6 +1,9 @@
 package org.kivislime.tennisscoreboard.match;
 
 import org.kivislime.tennisscoreboard.MatchMapper;
+import org.kivislime.tennisscoreboard.PlayerMapper;
+import org.kivislime.tennisscoreboard.PlayerScoreMapper;
+import org.kivislime.tennisscoreboard.player.Player;
 import org.kivislime.tennisscoreboard.player.PlayerDto;
 import org.kivislime.tennisscoreboard.player.PlayerService;
 
@@ -10,7 +13,9 @@ import java.util.stream.Collectors;
 public class MatchServiceImpl implements MatchService {
     private final MatchRepository matchRepository;
     private final MatchMapper matchMapper = MatchMapper.INSTANCE;
-    //TODO: Удалять матч после того ушли со страницы? хмхм
+    private final PlayerMapper playerMapper = PlayerMapper.INSTANCE;
+    private final PlayerScoreMapper playerScoreMapper = PlayerScoreMapper.INSTANCE;
+
     private static Map<UUID, MatchScore> currentMatches = Collections.synchronizedMap(new HashMap<>());
     private final PlayerService playerService;
 
@@ -95,8 +100,8 @@ public class MatchServiceImpl implements MatchService {
     private MatchScoreDto buildFinishedMatchScoreDto(MatchDto match, PlayerDto winner, PlayerScore first, PlayerScore second) {
         MatchDto resultMatchDto = new MatchDto(null, match.getFirstPlayer(), match.getSecondPlayer(), winner);
         return new MatchScoreDto(resultMatchDto,
-                matchMapper.playerScoreToDto(first),
-                matchMapper.playerScoreToDto(second));
+                playerScoreMapper.playerScoreToDto(first),
+                playerScoreMapper.playerScoreToDto(second));
     }
 
 }
