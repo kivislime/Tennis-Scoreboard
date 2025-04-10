@@ -6,4 +6,6 @@ public interface MatchRepository {
     List<Match> getMatches();
 
     List<Match> getMatchesByPlayerName(String playerName);
+
+    Match addMatch(Match match);
 }

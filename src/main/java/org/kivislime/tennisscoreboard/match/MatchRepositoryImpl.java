@@ -32,6 +32,12 @@ public class MatchRepositoryImpl implements MatchRepository {
             }
 
             return matches;
+    public Match addMatch(Match match) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            session.persist(match);
+            session.getTransaction().commit();
+            return match;
         }
     }
 }
