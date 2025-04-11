@@ -6,7 +6,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.kivislime.tennisscoreboard.ErrorResponse;
 import org.kivislime.tennisscoreboard.JsonUtil;
+import org.kivislime.tennisscoreboard.ValidatorUtil;
 
 import java.io.IOException;
 
@@ -27,6 +29,8 @@ public class MatchScoreServlet extends HttpServlet {
         String matchId = req.getParameter("uuid");
         if (matchId == null || matchId.isBlank()) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Match id is empty or blank.");
+            resp.getWriter().write(JsonUtil.toJson(errorResponse));
             return;
         }
 
@@ -46,10 +50,11 @@ public class MatchScoreServlet extends HttpServlet {
 
         if (matchId == null || playerNumberStr == null || matchId.isBlank() || playerNumberStr.isBlank()) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Match id or player number is invalid.");
+            resp.getWriter().write(JsonUtil.toJson(errorResponse));
             return;
         }
 
-        //TODO: if match end? may be returning in dto field "hasWinner"? Dont check winner field in controller? ask gpt
         try {
             Integer playerNumberInt = Integer.parseInt(playerNumberStr);
             PlayerNumber playerNumber;
@@ -58,7 +63,10 @@ public class MatchScoreServlet extends HttpServlet {
             } else if (playerNumberInt.equals(2)) {
                 playerNumber = PlayerNumber.SECOND;
             } else {
-                throw new RuntimeException("Invalid player number");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Invalid player number, must be 1 or 2.");
+                resp.getWriter().write(JsonUtil.toJson(errorResponse));
+                return;
             }
 
             MatchScoreDto matchScoreDto = matchService.handleScoring(matchId, playerNumber);
@@ -67,7 +75,8 @@ public class MatchScoreServlet extends HttpServlet {
             resp.getWriter().write(matchScoreJson);
         } catch (NumberFormatException e) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            throw new RuntimeException(e);
+            ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Invalid player number,  must be 1 or 2.");
+            resp.getWriter().write(JsonUtil.toJson(errorResponse));
         }
 
     }

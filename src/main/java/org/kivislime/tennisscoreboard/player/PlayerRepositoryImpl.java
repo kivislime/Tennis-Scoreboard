@@ -16,7 +16,7 @@ public class PlayerRepositoryImpl implements PlayerRepository {
 
             return Optional.ofNullable(player);
         } catch (HibernateException e) {
-            throw new HibernateException(e); //TODO: изменить на собственный тип
+            throw new PlayerRepositoryException("Error when receiving player by name: " + name + e.getMessage());
         }
     }
 

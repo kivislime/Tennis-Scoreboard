@@ -16,7 +16,7 @@ public class MatchServiceImpl implements MatchService {
     private final PlayerMapper playerMapper = PlayerMapper.INSTANCE;
     private final PlayerScoreMapper playerScoreMapper = PlayerScoreMapper.INSTANCE;
 
-    private static Map<UUID, MatchScore> currentMatches = Collections.synchronizedMap(new HashMap<>());
+    private static final Map<UUID, MatchScore> currentMatches = Collections.synchronizedMap(new HashMap<>());
     private final PlayerService playerService;
 
     public MatchServiceImpl(MatchRepository matchRepository, PlayerService playerService) {
@@ -69,7 +69,7 @@ public class MatchServiceImpl implements MatchService {
         UUID uuid = UUID.fromString(matchUuid);
         return Optional.ofNullable(currentMatches.get(uuid))
                 .map(matchMapper::matchScoreToDto)
-                .orElseThrow(() -> new RuntimeException("Match score not found for id: " + matchUuid));
+                .orElseThrow(() -> new MatchServiceException("Match score not found for id: " + matchUuid));
     }
 
     @Override
@@ -78,7 +78,7 @@ public class MatchServiceImpl implements MatchService {
         MatchScore matchScore = currentMatches.get(uuid);
 
         if (matchScore == null) {
-            throw new RuntimeException("Match score not found for id: " + matchId);
+            throw new MatchServiceException("Match score not found for id: " + uuid);
         }
 
         //TODO: изменить логику проверок. Какие параметры? Правильно ли соотносятся игрок 1 и 2 в по матчу

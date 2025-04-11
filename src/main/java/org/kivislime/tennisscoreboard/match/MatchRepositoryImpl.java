@@ -28,10 +28,15 @@ public class MatchRepositoryImpl implements MatchRepository {
                     .getResultList();
 
             if (matches.isEmpty()) {
-                throw new HibernateException("Match not found");
+                throw new MatchNotFoundException("Match not found");
             }
-
             return matches;
+            //TODO: replace concat -  format?
+        } catch (HibernateException e) {
+            throw new MatchRepositoryException("Error when receiving matches by player name: " + playerName + e.getMessage(), e);
+        }
+    }
+
     public Match addMatch(Match match) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();

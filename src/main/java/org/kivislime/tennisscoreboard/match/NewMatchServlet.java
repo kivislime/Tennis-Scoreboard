@@ -6,6 +6,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.kivislime.tennisscoreboard.ErrorResponse;
+import org.kivislime.tennisscoreboard.JsonUtil;
+import org.kivislime.tennisscoreboard.ValidatorUtil;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -29,11 +32,15 @@ public class NewMatchServlet extends HttpServlet {
         if (firstPlayerName == null || secondPlayerName == null ||
                 firstPlayerName.isBlank() || secondPlayerName.isBlank()) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "The name must consist only of Latin characters.");
+            resp.getWriter().write(JsonUtil.toJson(errorResponse));
             return;
         }
 
         if (firstPlayerName.equals(secondPlayerName)) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Players name must be different.");
+            resp.getWriter().write(JsonUtil.toJson(errorResponse));
             return;
         }
 
