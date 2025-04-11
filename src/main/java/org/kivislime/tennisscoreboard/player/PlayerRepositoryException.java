@@ -5,7 +5,4 @@ public class PlayerRepositoryException extends RuntimeException {
         super(message);
     }
 
-    public PlayerRepositoryException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

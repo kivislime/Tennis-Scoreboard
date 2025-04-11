@@ -53,7 +53,7 @@ class MatchServiceImplTest {
         Player player2 = new Player(2L, "Pohan");
         Player player3 = new Player(3L, "Kohan");
 
-        Match match1 = new Match(1L, player1, player2, player1);
+        new Match(1L, player1, player2, player1);
         Match match2 = new Match(2L, player1, player3, player3);
 
         when(mockMatchRepository.getMatchesByPlayerName("Kohan")).thenReturn(List.of(match2));

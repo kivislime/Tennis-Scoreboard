@@ -1,7 +1,6 @@
 package org.kivislime.tennisscoreboard.match;
 
 import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,13 +17,13 @@ public class NewMatchServlet extends HttpServlet {
     private MatchService matchService;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         ServletContext context = getServletContext();
         matchService = (MatchService) context.getAttribute("matchService");
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String firstPlayerName = req.getParameter("first_player_name");
         String secondPlayerName = req.getParameter("second_player_name");
 

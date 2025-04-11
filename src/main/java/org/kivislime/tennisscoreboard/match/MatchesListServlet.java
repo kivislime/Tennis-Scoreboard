@@ -1,7 +1,6 @@
 package org.kivislime.tennisscoreboard.match;
 
 import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,13 +16,13 @@ public class MatchesListServlet extends HttpServlet {
     private MatchService matchService;
 
     @Override
-    public void init() throws ServletException {
+    public void init() {
         ServletContext context = getServletContext();
         matchService = (MatchService) context.getAttribute("matchService");
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         //TODO: Context listener? Move service to context. Move mapper to context from service?
         //TODO: encoding?  req.setCharacterEncoding("UTF-8");

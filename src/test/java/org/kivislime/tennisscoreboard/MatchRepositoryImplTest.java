@@ -49,13 +49,4 @@ public class MatchRepositoryImplTest {
         assertFalse(matches.isEmpty(), "Ожидается, что найдутся матчи для игрока 'Kohan'");
     }
 
-    //TODO: with new exception
-//    @Test
-//    public void testGetMatchesByPlayerNameNotFound() {
-//        HibernateException exception = assertThrows(HibernateException.class, () -> {
-//            matchRepository.getMatchesByPlayerName("NonExistingPlayer");
-//        });
-//        assertTrue(exception.getMessage().contains("Match not found"),
-//                "Ожидается сообщение об ошибке 'Match not found'");
-//    }
 }
