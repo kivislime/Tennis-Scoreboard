@@ -28,9 +28,7 @@ public class NewMatchServlet extends HttpServlet {
         String firstPlayerName = req.getParameter("first_player_name");
         String secondPlayerName = req.getParameter("second_player_name");
 
-        //TODO: validate in util class
-        if (firstPlayerName == null || secondPlayerName == null ||
-                firstPlayerName.isBlank() || secondPlayerName.isBlank()) {
+        if (!ValidatorUtil.isValidName(firstPlayerName) || !ValidatorUtil.isValidName(secondPlayerName)) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "The name must consist only of Latin characters.");
             resp.getWriter().write(JsonUtil.toJson(errorResponse));
@@ -44,7 +42,6 @@ public class NewMatchServlet extends HttpServlet {
             return;
         }
 
-        //TODO: Set status code in other controllers, when success and fail in error response
         UUID matchId = matchService.createLiveMatchSession(firstPlayerName, secondPlayerName);
         String matchIdString = matchId.toString();
 

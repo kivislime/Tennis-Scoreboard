@@ -89,8 +89,10 @@ public class MatchServiceImpl implements MatchService {
         matchScore.processPointWinner(playerNumber);
 
         if (firstPlayerScore.getSets() >= MatchScore.MAX_SETS_FOR_WIN) {
+            currentMatches.remove(uuid);
             return buildFinishedMatchScoreDto(match, PlayerNumber.FIRST, firstPlayerScore, secondPlayerScore);
         } else if (secondPlayerScore.getSets() >= MatchScore.MAX_SETS_FOR_WIN) {
+            currentMatches.remove(uuid);
             return buildFinishedMatchScoreDto(match, PlayerNumber.SECOND, firstPlayerScore, secondPlayerScore);
         }
 

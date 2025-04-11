@@ -7,9 +7,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.kivislime.tennisscoreboard.JsonUtil;
+import org.kivislime.tennisscoreboard.ValidatorUtil;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 @WebServlet("/matches")
@@ -31,13 +31,12 @@ public class MatchesListServlet extends HttpServlet {
         String page = req.getParameter("page");
         String playerName = req.getParameter("filter_by_player_name");
 
-        List<MatchDto> matchDtoList = Collections.emptyList();
-        //TODO: validator?
-        if (page != null) {
+        List<MatchDto> matchDtoList;
+        if (ValidatorUtil.isValidParameter(page)) {
             //TODO: pagination?
         }
 
-        if (playerName != null && !playerName.isEmpty()) {
+        if (ValidatorUtil.isValidName(playerName)) {
             matchDtoList = matchService.getMatchesByPlayerName(playerName);
         } else {
             matchDtoList = matchService.getMatches();

@@ -27,7 +27,7 @@ public class MatchScoreServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         String matchId = req.getParameter("uuid");
-        if (matchId == null || matchId.isBlank()) {
+        if (!ValidatorUtil.isValidParameter(matchId)) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Match id is empty or blank.");
             resp.getWriter().write(JsonUtil.toJson(errorResponse));
@@ -48,7 +48,7 @@ public class MatchScoreServlet extends HttpServlet {
         String matchId = req.getParameter("uuid");
         String playerNumberStr = req.getParameter("player_number");
 
-        if (matchId == null || playerNumberStr == null || matchId.isBlank() || playerNumberStr.isBlank()) {
+        if (!ValidatorUtil.isValidUuid(matchId) || !ValidatorUtil.isValidParameter(playerNumberStr)) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Match id or player number is invalid.");
             resp.getWriter().write(JsonUtil.toJson(errorResponse));
