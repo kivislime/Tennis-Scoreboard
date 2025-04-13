@@ -60,7 +60,7 @@ public class MatchRepositoryImpl implements MatchRepository {
     @Override
     public long getTotalMatchesByPlayerName(String playerName) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "select count(m) from Match m where m.firstPlayer.name = :playerName";
+            String hql = "select count(m) from Match m where m.firstPlayer.name = :playerName or m.secondPlayer.name = :playerName";
             Query<Long> query = session.createQuery(hql, Long.class);
             query.setParameter("playerName", playerName);
 

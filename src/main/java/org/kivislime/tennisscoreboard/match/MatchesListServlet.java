@@ -49,11 +49,6 @@ public class MatchesListServlet extends HttpServlet {
         if (ValidatorUtil.isValidName(playerName)) {
             matchDtoList = matchService.getMatchesByPlayerName(playerName, pageNumber);
             totalMatches = matchService.getTotalMatchesByPlayerName(playerName);
-            if (totalMatches < pageNumber) {
-                ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Number of page greater than the number of total pages: " + totalMatches);
-                ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
-                return;
-            }
         } else if (ValidatorUtil.isValidParameter(playerName)) {
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "The name must consist only of Latin letters.");
             ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
@@ -61,14 +56,16 @@ public class MatchesListServlet extends HttpServlet {
         } else {
             matchDtoList = matchService.getMatches(pageNumber);
             totalMatches = matchService.getTotalMatches();
-            if (totalMatches < pageNumber) {
-                ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Number of page greater than the number of total pages: " + totalMatches);
-                ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
-                return;
-            }
         }
-
+        //TODO: move to where? util method?
         int totalPages = (int) Math.ceil((double) totalMatches / PaginationConfig.PAGE_SIZE);
+
+
+        if (totalPages < pageNumber) {
+            ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Number of page must be greater than 0 and less the number of total pages: " + totalMatches);
+            ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
+            return;
+        }
 
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("matches", matchDtoList);
