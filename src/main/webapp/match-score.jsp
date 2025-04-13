@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Счёт матча</title>
+    <title>Match Score</title>
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -35,18 +35,15 @@
             font-size: 2em;
             color: var(--text-color);
         }
-
         .score-table {
             width: 100%;
             border-collapse: collapse;
         }
-
         .score-table th, .score-table td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: center;
         }
-
         .score-table th {
             background: #f9fafc;
         }
@@ -60,15 +57,54 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-        button:hover {
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        button:hover:not(:disabled) {
             background-color: var(--hover-color);
+        }
+
+        #matchStatus {
+            margin-top: 20px;
+            font-size: 18px;
+            color: var(--text-color);
+        }
+
+        #errorMessage {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #c62828;
+            background-color: #ffcdd2;
+            padding: 12px 20px;
+            border-radius: 10px;
+            display: none;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 0 10px rgba(198, 40, 40, 0.3);
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         @media (max-width: 600px) {
             .score-container {
                 padding: 20px;
             }
 
-            .score-table td, .score-table th {
+            .score-table th, .score-table td {
                 font-size: 14px;
                 padding: 8px;
             }
@@ -81,20 +117,20 @@
 </head>
 <body>
 <div class="score-container">
-    <h2>Счёт матча</h2>
+    <h2>Match Score</h2>
     <table class="score-table">
         <thead>
         <tr>
-            <th>Имя игрока</th>
-            <th>Сеты</th>
-            <th>Игры</th>
-            <th>Очки</th>
-            <th>+1 очко</th>
+            <th>Player Name</th>
+            <th>Sets</th>
+            <th>Games</th>
+            <th>Points</th>
+            <th>+1 Point</th>
         </tr>
         </thead>
         <tbody>
         <tr>
-            <td id="player1Name">Игрок 1</td>
+            <td id="player1Name">Player 1</td>
             <td id="player1Sets">0</td>
             <td id="player1Games">0</td>
             <td id="player1Points">0</td>
@@ -103,7 +139,7 @@
             </td>
         </tr>
         <tr>
-            <td id="player2Name">Игрок 2</td>
+            <td id="player2Name">Player 2</td>
             <td id="player2Sets">0</td>
             <td id="player2Games">0</td>
             <td id="player2Points">0</td>
@@ -113,6 +149,8 @@
         </tr>
         </tbody>
     </table>
+    <div id="matchStatus"></div>
+    <div id="errorMessage"></div>
 </div>
 
 <script>
@@ -131,34 +169,66 @@
         document.getElementById("player2Sets").textContent = `\${secondPlayerScore.sets}`;
         document.getElementById("player2Games").textContent = `\${secondPlayerScore.games}`;
         document.getElementById("player2Points").textContent = `\${secondPlayerScore.points}`;
+
+        if (matchDto.winnerPlayer) {
+            document.querySelectorAll(".score-table button").forEach(btn => btn.disabled = true);
+            document.getElementById("matchStatus").innerHTML = `
+                <p>Match completed. Winner: \${matchDto.winnerPlayer.name}</p>
+                <a href="index.jsp"><button>Go to Home</button></a>
+            `;
+        }
     }
 
     function fetchScore() {
         fetch(`/TennisScoreboard/match-score?uuid=\${uuid}`)
             .then(res => {
-                if (!res.ok) throw new Error('Ошибка получения данных');
+                if (!res.ok) return res.json().then(data => {
+                    throw new Error(data.message || 'Error fetching data')
+                });
                 return res.json();
             })
             .then(data => updateScoreboard(data))
-            .catch(err => alert('Ошибка получения счёта: ' + err.message));
+            .catch(err => {
+                displayErrorMessage(err.message);
+            });
     }
 
     function addScore(playerNumber) {
         fetch(`/TennisScoreboard/match-score?uuid=\${uuid}&player_number=\${playerNumber}`, {
-            method: "POST",
+            method: "POST"
         })
             .then(res => {
-                if (!res.ok) throw new Error('Ошибка обновления счёта');
+                if (!res.ok) {
+                    return res.json().then(data => {
+                        const errorCode = data.errorCode;
+                        if (errorCode === "MAX_GAMES_EXCEEDED") {
+                            displayErrorMessage(data.message);
+                            document.querySelectorAll(".score-table button").forEach(btn => btn.disabled = true);
+                            return;
+                        }
+                        throw new Error(data.message || 'Error updating score');
+                    });
+                }
                 return res.json();
             })
-            .then(data => updateScoreboard(data))
-            .catch(err => alert('Ошибка обновления счёта: ' + err.message));
+            .then(data => {
+                if (data) updateScoreboard(data);
+            })
+            .catch(err => {
+                displayErrorMessage(err.message);
+            });
+    }
+
+    function displayErrorMessage(message) {
+        const errorMessageDiv = document.getElementById('errorMessage');
+        errorMessageDiv.textContent = message;
+        errorMessageDiv.style.display = 'block';
     }
 
     if (uuid) {
         fetchScore();
     } else {
-        alert("UUID матча не найден в URL");
+        alert("Match UUID not found in URL");
     }
 </script>
 </body>

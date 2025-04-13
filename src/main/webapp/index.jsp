@@ -43,39 +43,92 @@
             margin: 10px 5px;
             border: none;
             border-radius: 10px;
-            background-color: #4e91f9;
+            background-color: #5cb85c;
             color: white;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
 
         button:hover {
-            background-color: #376fd1;
+            background-color: #449d44;
         }
 
         a button {
-            background-color: #5cb85c;
+            background-color: #4e91f9;
         }
 
         a button:hover {
-            background-color: #449d44;
+            background-color: #376fd1;
+        }
+
+        #error {
+            display: none;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+
+            text-align: center;
+            font-size: 18px;
+            color: #c62828;
+            background-color: #ffcdd2;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 0 10px rgba(198, 40, 40, 0.3);
+            animation: fadeIn 0.4s ease-in-out;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>Создание нового матча</h1>
+    <h1>Creating a new match</h1>
 
-    <form action="new-match" method="post">
-        <input type="text" name="first_player_name" placeholder="Имя первого игрока" required>
-        <input type="text" name="second_player_name" placeholder="Имя второго игрока" required>
-        <br>
-        <button type="submit">Создать матч</button>
+    <form id="matchForm">
+        <input type="text" name="first_player_name" placeholder="Name of the first player" required>
+        <input type="text" name="second_player_name" placeholder="Name of the second player" required>
+
+        <div id="error"></div>
+
+        <button type="submit">Create match</button>
     </form>
 
     <a href="matches.jsp">
-        <button>Список матчей</button>
+        <button>List of matches</button>
     </a>
 </div>
+
+<script>
+    document.getElementById('matchForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const firstPlayer = form.first_player_name.value;
+        const secondPlayer = form.second_player_name.value;
+        const errorDiv = document.getElementById('error');
+
+        fetch('new-match', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                first_player_name: firstPlayer,
+                second_player_name: secondPlayer
+            })
+        }).then(async response => {
+            if (!response.ok) {
+                const error = await response.json();
+                errorDiv.style.display = 'block';
+                errorDiv.textContent = error.message;
+            } else {
+                window.location.href = response.url || 'matches.jsp';
+            }
+        }).catch(err => {
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = 'Error when connecting to the server.';
+        });
+    });
+</script>
 </body>
 </html>
