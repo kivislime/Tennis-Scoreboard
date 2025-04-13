@@ -17,7 +17,7 @@ ext {
 sourceCompatibility = '11'
 targetCompatibility = '11'
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
@@ -33,6 +33,7 @@ dependencies {
 
     implementation 'org.hibernate:hibernate-core:6.1.5.Final'
     implementation 'com.h2database:h2:2.2.220'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.2'
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
