@@ -7,7 +7,7 @@ public class ValidatorUtil {
     private static final int MAX_NAME_LENGTH = 15;
     private static final int MIN_NAME_LENGTH = 2;
     private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Z]+$");
-    private static final Pattern PAGE_PATTERN = Pattern.compile("\\d+");
+    private static final Pattern PAGE_PATTERN = Pattern.compile("[1-9]\\d*");
 
     public static boolean isValidParameter(String name) {
         return name != null && !name.isBlank();
