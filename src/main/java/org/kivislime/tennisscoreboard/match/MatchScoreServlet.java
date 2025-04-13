@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.kivislime.tennisscoreboard.ErrorResponse;
 import org.kivislime.tennisscoreboard.JsonUtil;
+import org.kivislime.tennisscoreboard.ServletUtil;
 import org.kivislime.tennisscoreboard.ValidatorUtil;
 
 import java.io.IOException;
@@ -27,9 +28,8 @@ public class MatchScoreServlet extends HttpServlet {
 
         String matchId = req.getParameter("uuid");
         if (!ValidatorUtil.isValidParameter(matchId)) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Match id is empty or blank.");
-            resp.getWriter().write(JsonUtil.toJson(errorResponse));
+            ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
             return;
         }
 
@@ -48,9 +48,8 @@ public class MatchScoreServlet extends HttpServlet {
         String playerNumberStr = req.getParameter("player_number");
 
         if (!ValidatorUtil.isValidUuid(matchId) || !ValidatorUtil.isValidParameter(playerNumberStr)) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Match id or player number is invalid.");
-            resp.getWriter().write(JsonUtil.toJson(errorResponse));
+            ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
             return;
         }
 
@@ -62,9 +61,8 @@ public class MatchScoreServlet extends HttpServlet {
             } else if (playerNumberInt.equals(2)) {
                 playerNumber = PlayerNumber.SECOND;
             } else {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Invalid player number, must be 1 or 2.");
-                resp.getWriter().write(JsonUtil.toJson(errorResponse));
+                ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
                 return;
             }
 
@@ -73,9 +71,8 @@ public class MatchScoreServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write(matchScoreJson);
         } catch (NumberFormatException e) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Invalid player number,  must be 1 or 2.");
-            resp.getWriter().write(JsonUtil.toJson(errorResponse));
+            ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
         }
 
     }

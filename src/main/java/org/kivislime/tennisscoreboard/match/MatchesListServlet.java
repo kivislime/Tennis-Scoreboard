@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.kivislime.tennisscoreboard.ErrorResponse;
 import org.kivislime.tennisscoreboard.JsonUtil;
+import org.kivislime.tennisscoreboard.ServletUtil;
 import org.kivislime.tennisscoreboard.ValidatorUtil;
 
 import java.io.IOException;
@@ -38,8 +39,7 @@ public class MatchesListServlet extends HttpServlet {
             }
         } catch (NumberFormatException e) {
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Invalid page number");
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().println(JsonUtil.toJson(errorResponse));
+            ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
             return;
         }
 
@@ -51,22 +51,19 @@ public class MatchesListServlet extends HttpServlet {
             totalMatches = matchService.getTotalMatchesByPlayerName(playerName);
             if (totalMatches < pageNumber) {
                 ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Number of page greater than the number of total pages: " + totalMatches);
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().println(JsonUtil.toJson(errorResponse));
+                ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
                 return;
             }
         } else if (ValidatorUtil.isValidParameter(playerName)) {
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "The name must consist only of Latin letters.");
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().println(JsonUtil.toJson(errorResponse));
+            ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
             return;
         } else {
             matchDtoList = matchService.getMatches(pageNumber);
             totalMatches = matchService.getTotalMatches();
             if (totalMatches < pageNumber) {
                 ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Number of page greater than the number of total pages: " + totalMatches);
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().println(JsonUtil.toJson(errorResponse));
+                ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
                 return;
             }
         }
@@ -79,8 +76,6 @@ public class MatchesListServlet extends HttpServlet {
         responseData.put("currentPage", pageNumber);
 
         String jsonResponse = JsonUtil.toJson(responseData);
-        //TODO: дорабоать matches, match-score чтобы красиво отображало ошибку в закругленной плашке как в index.jsp
-        // переписываю ли я комментарии ошибок? смысл этого если так?
         resp.getWriter().write(jsonResponse);
     }
 }

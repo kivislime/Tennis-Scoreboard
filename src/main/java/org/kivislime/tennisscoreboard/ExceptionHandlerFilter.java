@@ -22,32 +22,30 @@ public class ExceptionHandlerFilter implements Filter {
         } catch (MatchNotFoundException e) {
             ErrorResponse errorResponse = new ErrorResponse("NOT_FOUND", "Match does not exist");
             logger.log(Level.INFO, "Match not found: {0}", e.getMessage());
-            writeJsonError(errorResponse, HttpServletResponse.SC_NOT_FOUND, servletResponse);
+            ServletUtil.sendJsonError((HttpServletResponse) servletResponse, HttpServletResponse.SC_NOT_FOUND, errorResponse);
+
         } catch (MatchScoreException e) {
             ErrorResponse errorResponse = new ErrorResponse("NOT_FOUND", "Match score not found");
             logger.log(Level.INFO, "Match score not found: {0}", e.getMessage());
-            writeJsonError(errorResponse, HttpServletResponse.SC_NOT_FOUND, servletResponse);
+            ServletUtil.sendJsonError((HttpServletResponse) servletResponse, HttpServletResponse.SC_NOT_FOUND, errorResponse);
+
         } catch (MatchRepositoryException | PlayerRepositoryException e) {
             ErrorResponse errorResponse = new ErrorResponse("INTERNAL_SERVER_ERROR", "Internal Server Error");
             logger.log(Level.WARNING, "Internal Server Error: {0}", e.getMessage());
-            writeJsonError(errorResponse, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, servletResponse);
+            ServletUtil.sendJsonError((HttpServletResponse) servletResponse, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorResponse);
+
         } catch (MaxGamesExceededException e) {
             ErrorResponse errorResponse = new ErrorResponse(
                     "MAX_GAMES_EXCEEDED",
                     "The match has been terminated because the maximum number of games was reached"
             );
             logger.log(Level.INFO, "Match forcibly terminated due to max games: {0}", e.getMessage());
-            writeJsonError(errorResponse, HttpServletResponse.SC_CONFLICT, servletResponse);
+            ServletUtil.sendJsonError((HttpServletResponse) servletResponse, HttpServletResponse.SC_CONFLICT, errorResponse);
+
         } catch (Exception e) {
             ErrorResponse errorResponse = new ErrorResponse("INTERNAL_SERVER_ERROR", "Internal Server Error");
             logger.log(Level.WARNING, "Unknown Error: {0}", e.getMessage());
-            writeJsonError(errorResponse, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, servletResponse);
+            ServletUtil.sendJsonError((HttpServletResponse) servletResponse, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorResponse);
         }
-    }
-
-    private void writeJsonError(ErrorResponse errorResponse, int statusCode, ServletResponse response) throws IOException {
-        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        httpServletResponse.setStatus(statusCode);
-        httpServletResponse.getWriter().write(JsonUtil.toJson(errorResponse));
     }
 }
