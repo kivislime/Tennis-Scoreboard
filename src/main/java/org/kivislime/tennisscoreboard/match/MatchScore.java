@@ -62,4 +62,8 @@ public final class MatchScore {
         return player.getGames() >= GAMES_BEFORE_TIE_BREAK &&
                 player.getGames() - opponent.getGames() >= GAMES_DIFFERENCE_TO_WIN_SET;
     }
+
+    public boolean isMaxGames(Integer maxGamesInSet) {
+        return firstPlayerScore.getGames() > maxGamesInSet && secondPlayerScore.getGames() > maxGamesInSet;
+    }
 }

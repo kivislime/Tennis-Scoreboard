@@ -17,6 +17,9 @@ public class MatchServiceImpl implements MatchService {
     private final PlayerScoreMapper playerScoreMapper = PlayerScoreMapper.INSTANCE;
     private static final int MAX_GAMES_IN_SET = 50;
 
+    private static final Map<UUID, MatchScore> currentMatches = Collections.synchronizedMap(new HashMap<>());
+    private final PlayerService playerService;
+
     public MatchServiceImpl(MatchRepository matchRepository, PlayerService playerService) {
         this.matchRepository = matchRepository;
         this.playerService = playerService;
@@ -79,7 +82,7 @@ public class MatchServiceImpl implements MatchService {
         UUID uuid = UUID.fromString(matchUuid);
         return Optional.ofNullable(currentMatches.get(uuid))
                 .map(matchMapper::matchScoreToDto)
-                .orElseThrow(() -> new MatchServiceException("Match score not found for id: " + matchUuid));
+                .orElseThrow(() -> new MatchScoreException("Match score not found for id: " + matchUuid));
     }
 
     @Override
@@ -88,16 +91,21 @@ public class MatchServiceImpl implements MatchService {
         MatchScore matchScore = currentMatches.get(uuid);
 
         if (matchScore == null) {
-            throw new MatchServiceException("Match score not found for id: " + uuid);
+            throw new MatchScoreException("Match score not found for id: " + uuid);
         }
 
-        //TODO: изменить логику проверок. Какие параметры? Правильно ли соотносятся игрок 1 и 2 в по матчу
         MatchDto match = matchScore.getMatchDto();
         PlayerScore firstPlayerScore = matchScore.getFirstPlayerScore();
         PlayerScore secondPlayerScore = matchScore.getSecondPlayerScore();
 
         matchScore.processPointWinner(playerNumber);
 
+        if (matchScore.isMaxGames(MAX_GAMES_IN_SET)) {
+            currentMatches.remove(uuid);
+            throw new MaxGamesExceededException("Maximum number of games. The match reached the limit of games in the set");
+        }
+
+        //TODO: где хранить все константы? Логически расположить где? То что в конфиге понятно, вопрос тоже в каком спросить, класс или файл
         if (firstPlayerScore.getSets() >= MatchScore.MAX_SETS_FOR_WIN) {
             currentMatches.remove(uuid);
             return buildFinishedMatchScoreDto(match, PlayerNumber.FIRST, firstPlayerScore, secondPlayerScore);
