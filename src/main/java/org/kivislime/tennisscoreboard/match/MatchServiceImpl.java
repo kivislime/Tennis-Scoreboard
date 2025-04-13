@@ -15,27 +15,37 @@ public class MatchServiceImpl implements MatchService {
     private final MatchMapper matchMapper = MatchMapper.INSTANCE;
     private final PlayerMapper playerMapper = PlayerMapper.INSTANCE;
     private final PlayerScoreMapper playerScoreMapper = PlayerScoreMapper.INSTANCE;
-
-    private static final Map<UUID, MatchScore> currentMatches = Collections.synchronizedMap(new HashMap<>());
-    private final PlayerService playerService;
+    private static final int MAX_GAMES_IN_SET = 50;
 
     public MatchServiceImpl(MatchRepository matchRepository, PlayerService playerService) {
         this.matchRepository = matchRepository;
         this.playerService = playerService;
     }
 
-    public List<MatchDto> getMatches() {
-        return matchRepository.getMatches()
+    @Override
+    public List<MatchDto> getMatches(Integer pageNumber) {
+        return matchRepository.getMatches(pageNumber)
                 .stream()
                 .map(matchMapper::matchToDto)
                 .collect(Collectors.toList());
     }
 
-    public List<MatchDto> getMatchesByPlayerName(String playerName) {
-        return matchRepository.getMatchesByPlayerName(playerName)
+    @Override
+    public long getTotalMatches() {
+        return matchRepository.getTotalMatches();
+    }
+
+    @Override
+    public List<MatchDto> getMatchesByPlayerName(String playerName, Integer pageNumber) {
+        return matchRepository.getMatchesByPlayerName(playerName, pageNumber)
                 .stream()
                 .map(matchMapper::matchToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public long getTotalMatchesByPlayerName(String playerName) {
+        return matchRepository.getTotalMatchesByPlayerName(playerName);
     }
 
     @Override
