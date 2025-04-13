@@ -47,10 +47,11 @@ public class MatchRepositoryImpl implements MatchRepository {
                     .getResultList();
 
             if (matches.isEmpty()) {
-                throw new MatchNotFoundException("Match not found in match repository");
+                throw new MatchesNotFoundException("Matches not found in match repository for player: " + playerName +
+                        ", and page number: " + pageNumber);
             }
+
             return matches;
-            //TODO: replace concat -  format?
         } catch (HibernateException e) {
             throw new MatchRepositoryException("Error when receiving matches by player name: " + playerName, e);
         }
