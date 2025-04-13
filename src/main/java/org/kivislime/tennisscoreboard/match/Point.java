@@ -27,20 +27,4 @@ public enum Point {
                 throw new IllegalArgumentException("Unknown state: " + this);
         }
     }
-
-    public Point prev() {
-        switch (this) {
-            case ZERO:
-                return ZERO;
-            case FIFTEEN:
-                return ZERO;
-            case THIRTY:
-                return FIFTEEN;
-            case FORTY:
-                return THIRTY;
-            default:
-                throw new IllegalArgumentException("Unknown state: " + this);
-        }
-    }
-
 }

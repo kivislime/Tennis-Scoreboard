@@ -29,7 +29,7 @@ public class NewMatchServlet extends HttpServlet {
 
         if (!ValidatorUtil.isValidName(firstPlayerName) || !ValidatorUtil.isValidName(secondPlayerName)) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "The name must consist only of Latin characters.");
+            ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "The length of the name must be more than 2, but less than 16 and consist only of Latin letters.");
             resp.getWriter().write(JsonUtil.toJson(errorResponse));
             return;
         }
