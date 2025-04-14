@@ -6,11 +6,11 @@ import java.util.UUID;
 public interface MatchService {
     List<MatchDto> getMatches(Integer pageNumber);
 
-    long getTotalMatches();
+    long getTotalPages();
 
     List<MatchDto> getMatchesByPlayerName(String playerName, Integer pageNumber);
 
-    long getTotalMatchesByPlayerName(String playerName);
+    long getTotalPagesByPlayerName(String playerName);
 
     UUID createLiveMatchSession(String firstPlayerName, String secondPlayerName);
 

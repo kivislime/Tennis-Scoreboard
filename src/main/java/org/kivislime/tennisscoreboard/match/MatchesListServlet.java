@@ -44,27 +44,18 @@ public class MatchesListServlet extends HttpServlet {
         }
 
         List<MatchDto> matchDtoList;
-        long totalMatches;
+        long totalPages;
 
         if (ValidatorUtil.isValidName(playerName)) {
+            totalPages = matchService.getTotalPagesByPlayerName(playerName);
             matchDtoList = matchService.getMatchesByPlayerName(playerName, pageNumber);
-            totalMatches = matchService.getTotalMatchesByPlayerName(playerName);
         } else if (ValidatorUtil.isValidParameter(playerName)) {
-            ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "The name must consist only of Latin letters.");
+            ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "The length of the name must be more than 2, but less than 16 and consist only of Latin letters.");
             ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
             return;
         } else {
+            totalPages = matchService.getTotalPages();
             matchDtoList = matchService.getMatches(pageNumber);
-            totalMatches = matchService.getTotalMatches();
-        }
-        //TODO: move to where? util method?
-        int totalPages = (int) Math.ceil((double) totalMatches / PaginationConfig.PAGE_SIZE);
-
-
-        if (totalPages < pageNumber) {
-            ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Number of page must be greater than 0 and less the number of total pages: " + totalMatches);
-            ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
-            return;
         }
 
         Map<String, Object> responseData = new HashMap<>();
@@ -73,6 +64,7 @@ public class MatchesListServlet extends HttpServlet {
         responseData.put("currentPage", pageNumber);
 
         String jsonResponse = JsonUtil.toJson(responseData);
+        resp.setStatus(HttpServletResponse.SC_OK);
         resp.getWriter().write(jsonResponse);
     }
 }

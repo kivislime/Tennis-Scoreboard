@@ -34,8 +34,9 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public long getTotalMatches() {
-        return matchRepository.getTotalMatches();
+    public long getTotalPages() {
+        long totalMatches = matchRepository.getTotalMatches();
+        return calculateTotalPages(totalMatches);
     }
 
     @Override
@@ -47,8 +48,9 @@ public class MatchServiceImpl implements MatchService {
     }
 
     @Override
-    public long getTotalMatchesByPlayerName(String playerName) {
-        return matchRepository.getTotalMatchesByPlayerName(playerName);
+    public long getTotalPagesByPlayerName(String playerName) {
+        long totalMatches = matchRepository.getTotalMatchesByPlayerName(playerName);
+        return calculateTotalPages(totalMatches);
     }
 
     @Override
@@ -136,5 +138,12 @@ public class MatchServiceImpl implements MatchService {
                 playerScoreMapper.playerScoreToDto(first),
                 playerScoreMapper.playerScoreToDto(second));
     }
-}
 
+    private long calculateTotalPages(long totalMatches) {
+        return (int) Math.ceil((double) totalMatches / PaginationConfig.PAGE_SIZE);
+    }
+
+    MatchScore getMatchScore(UUID id) {
+        return currentMatches.get(id);
+    }
+}
