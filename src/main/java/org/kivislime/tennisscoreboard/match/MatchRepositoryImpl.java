@@ -10,8 +10,6 @@ import java.util.List;
 public class MatchRepositoryImpl implements MatchRepository {
     public List<Match> getMatches(Integer pageNumber) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            //TODO: add beginTransaction where need to dml operation
-            // session.beginTransaction();
             int offset = (pageNumber - 1) * PaginationConfig.PAGE_SIZE;
 
             String hql = "from Match";
@@ -20,6 +18,8 @@ public class MatchRepositoryImpl implements MatchRepository {
                     .setMaxResults(PaginationConfig.PAGE_SIZE);
 
             return query.getResultList();
+        } catch (HibernateException e) {
+            throw new MatchRepositoryException("Error when receiving matches: ", e);
         }
     }
 
@@ -77,6 +77,8 @@ public class MatchRepositoryImpl implements MatchRepository {
             session.persist(match);
             session.getTransaction().commit();
             return match;
+        } catch (HibernateException e) {
+            throw new MatchRepositoryException("Error when adding match: " + match, e);
         }
     }
 }
