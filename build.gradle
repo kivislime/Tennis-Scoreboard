@@ -36,6 +36,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.2'
 
+    testImplementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
     testImplementation("org.mockito:mockito-junit-jupiter:4.11.0")
