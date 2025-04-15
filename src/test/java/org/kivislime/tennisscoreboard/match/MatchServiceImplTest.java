@@ -2,9 +2,18 @@ package org.kivislime.tennisscoreboard.match;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kivislime.tennisscoreboard.player.Player;
-import org.kivislime.tennisscoreboard.player.PlayerDto;
-import org.kivislime.tennisscoreboard.player.PlayerService;
+import org.kivislime.tennisscoreboard.config.MatchConstants;
+import org.kivislime.tennisscoreboard.domain.Match;
+import org.kivislime.tennisscoreboard.domain.MatchScore;
+import org.kivislime.tennisscoreboard.dto.MatchDto;
+import org.kivislime.tennisscoreboard.dto.MatchScoreDto;
+import org.kivislime.tennisscoreboard.exception.MatchScoreException;
+import org.kivislime.tennisscoreboard.domain.Player;
+import org.kivislime.tennisscoreboard.dto.PlayerDto;
+import org.kivislime.tennisscoreboard.domain.PlayerNumber;
+import org.kivislime.tennisscoreboard.repository.MatchRepository;
+import org.kivislime.tennisscoreboard.service.MatchServiceImpl;
+import org.kivislime.tennisscoreboard.service.PlayerService;
 
 import java.util.List;
 import java.util.Optional;
@@ -70,7 +79,7 @@ class MatchServiceImplTest {
         UUID matchId = matchService.createLiveMatchSession(first, second);
         MatchScore matchScore = matchService.getMatchScore(matchId);
 
-        for (int i = 0; i < MatchScore.MAX_SETS_FOR_WIN; i++) {
+        for (int i = 0; i < MatchConstants.MAX_SETS_FOR_WIN; i++) {
             matchScore.getFirstPlayerScore().winSet();
         }
 

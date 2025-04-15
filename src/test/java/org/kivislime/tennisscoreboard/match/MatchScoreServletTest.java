@@ -6,6 +6,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kivislime.tennisscoreboard.controller.MatchScoreServlet;
+import org.kivislime.tennisscoreboard.dto.MatchScoreDto;
+import org.kivislime.tennisscoreboard.domain.PlayerNumber;
+import org.kivislime.tennisscoreboard.service.MatchService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 

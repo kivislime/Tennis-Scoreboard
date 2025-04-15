@@ -16,7 +16,7 @@
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
 
-        <mapping class="org.kivislime.tennisscoreboard.match.Match"/>
-        <mapping class="org.kivislime.tennisscoreboard.player.Player"/>
+        <mapping class="org.kivislime.tennisscoreboard.domain.Match"/>
+        <mapping class="org.kivislime.tennisscoreboard.domain.Player"/>
     </session-factory>
 </hibernate-configuration>
