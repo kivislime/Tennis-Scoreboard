@@ -121,7 +121,9 @@
 <h1>Match List</h1>
 
 <div class="back-button-container">
-    <button onclick="history.back()">Back</button>
+    <a href="index.jsp">
+        <button>Back to Home</button>
+    </a>
 </div>
 
 <div class="filter">
@@ -148,7 +150,7 @@
 <script>
     function loadMatches(pageNumber = 1) {
         const playerName = document.getElementById("playerFilter").value.trim();
-        let url = `/TennisScoreboard/matches?page=\${pageNumber}`;
+        let url = `/tennis-scoreboard/matches?page=\${pageNumber}`;
         if (playerName) {
             url += `&filter_by_player_name=\${encodeURIComponent(playerName)}`;
         }

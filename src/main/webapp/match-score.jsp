@@ -14,6 +14,7 @@
             --text-color: #333;
             --font-family: 'Segoe UI', sans-serif;
         }
+
         body {
             font-family: var(--font-family), serif;
             background-color: #eef2f7;
@@ -21,6 +22,7 @@
             padding: 50px 0;
             margin: 0;
         }
+
         .score-container {
             background-color: var(--container-bg);
             padding: 40px;
@@ -30,23 +32,28 @@
             width: 90%;
             margin: 0 auto;
         }
+
         h2 {
             margin-bottom: 20px;
             font-size: 2em;
             color: var(--text-color);
         }
+
         .score-table {
             width: 100%;
             border-collapse: collapse;
         }
+
         .score-table th, .score-table td {
             border: 1px solid #ddd;
             padding: 12px;
             text-align: center;
         }
+
         .score-table th {
             background: #f9fafc;
         }
+
         button {
             padding: 8px 12px;
             font-size: 14px;
@@ -99,6 +106,7 @@
                 transform: translateY(0);
             }
         }
+
         @media (max-width: 600px) {
             .score-container {
                 padding: 20px;
@@ -108,6 +116,7 @@
                 font-size: 14px;
                 padding: 8px;
             }
+
             button {
                 width: 100%;
                 margin-top: 4px;
@@ -163,12 +172,14 @@
         document.getElementById("player1Name").textContent = `\${matchDto.firstPlayer.name}`;
         document.getElementById("player1Sets").textContent = `\${firstPlayerScore.sets}`;
         document.getElementById("player1Games").textContent = `\${firstPlayerScore.games}`;
-        document.getElementById("player1Points").textContent = `\${firstPlayerScore.points}`;
+        document.getElementById("player1Points").textContent =
+            firstPlayerScore.points === -1 ? "AD" : firstPlayerScore.points;
 
         document.getElementById("player2Name").textContent = `\${matchDto.secondPlayer.name}`;
         document.getElementById("player2Sets").textContent = `\${secondPlayerScore.sets}`;
         document.getElementById("player2Games").textContent = `\${secondPlayerScore.games}`;
-        document.getElementById("player2Points").textContent = `\${secondPlayerScore.points}`;
+        document.getElementById("player2Points").textContent =
+            secondPlayerScore.points === -1 ? "AD" : secondPlayerScore.points;
 
         if (matchDto.winnerPlayer) {
             document.querySelectorAll(".score-table button").forEach(btn => btn.disabled = true);
@@ -180,7 +191,7 @@
     }
 
     function fetchScore() {
-        fetch(`/TennisScoreboard/match-score?uuid=\${uuid}`)
+        fetch(`/tennis-scoreboard/match-score?uuid=\${uuid}`)
             .then(res => {
                 if (!res.ok) return res.json().then(data => {
                     throw new Error(data.message || 'Error fetching data')
@@ -194,7 +205,7 @@
     }
 
     function addScore(playerNumber) {
-        fetch(`/TennisScoreboard/match-score?uuid=\${uuid}&player_number=\${playerNumber}`, {
+        fetch(`/tennis-scoreboard/match-score?uuid=\${uuid}&player_number=\${playerNumber}`, {
             method: "POST"
         })
             .then(res => {
