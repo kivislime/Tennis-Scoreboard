@@ -1,8 +1,8 @@
 package org.kivislime.tennisscoreboard.service;
 
-import org.kivislime.tennisscoreboard.mapper.PlayerMapper;
 import org.kivislime.tennisscoreboard.domain.Player;
 import org.kivislime.tennisscoreboard.dto.PlayerDto;
+import org.kivislime.tennisscoreboard.mapper.PlayerMapper;
 import org.kivislime.tennisscoreboard.repository.PlayerRepository;
 
 import java.util.Optional;
@@ -27,7 +27,7 @@ public class PlayerServiceImpl implements PlayerService {
 
     @Override
     public Optional<PlayerDto> getPlayer(String playerName) {
-        return playerRepository.getPlayer(playerName)
+        return playerRepository.findByName(playerName)
                 .map(playerMapper::playerToDto);
     }
 }
