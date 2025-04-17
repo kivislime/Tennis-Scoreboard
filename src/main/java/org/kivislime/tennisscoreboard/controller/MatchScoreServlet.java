@@ -6,9 +6,9 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.kivislime.tennisscoreboard.ErrorResponse;
+import org.kivislime.tennisscoreboard.domain.PlayerNumber;
 import org.kivislime.tennisscoreboard.dto.MatchScoreDto;
 import org.kivislime.tennisscoreboard.service.MatchService;
-import org.kivislime.tennisscoreboard.domain.PlayerNumber;
 import org.kivislime.tennisscoreboard.util.JsonUtil;
 import org.kivislime.tennisscoreboard.util.ServletUtil;
 import org.kivislime.tennisscoreboard.util.ValidatorUtil;
@@ -30,7 +30,7 @@ public class MatchScoreServlet extends HttpServlet {
         resp.setContentType("application/json");
 
         String matchId = req.getParameter("uuid");
-        if (!ValidatorUtil.isValidParameter(matchId)) {
+        if (!ValidatorUtil.isValidUuid(matchId)) {
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Match id is empty or blank.");
             ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
             return;
@@ -57,11 +57,11 @@ public class MatchScoreServlet extends HttpServlet {
         }
 
         try {
-            Integer playerNumberInt = Integer.parseInt(playerNumberStr);
+            int playerNumberInt = Integer.parseInt(playerNumberStr);
             PlayerNumber playerNumber;
-            if (playerNumberInt.equals(1)) {
+            if (PlayerNumber.fromInt(playerNumberInt).isPresent()) {
                 playerNumber = PlayerNumber.FIRST;
-            } else if (playerNumberInt.equals(2)) {
+            } else if (PlayerNumber.fromInt(playerNumberInt).isPresent()) {
                 playerNumber = PlayerNumber.SECOND;
             } else {
                 ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Invalid player number, must be 1 or 2.");
