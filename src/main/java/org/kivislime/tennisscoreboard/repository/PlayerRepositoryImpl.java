@@ -18,7 +18,7 @@ public class PlayerRepositoryImpl implements PlayerRepository {
 
             return Optional.ofNullable(player);
         } catch (HibernateException e) {
-            throw new PlayerRepositoryException("Error when receiving player by name: " + name, e);
+            throw new PlayerRepositoryException(String.format("Error when receiving player by name: %s", name), e);
         }
     }
 
@@ -30,7 +30,7 @@ public class PlayerRepositoryImpl implements PlayerRepository {
             session.getTransaction().commit();
             return player;
         } catch (HibernateException e) {
-            throw new PlayerRepositoryException("Error when adding player by name: " + player.getName(), e);
+            throw new PlayerRepositoryException(String.format("Error when adding player by name: %s", player.getName()), e);
         }
     }
 }

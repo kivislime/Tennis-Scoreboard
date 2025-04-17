@@ -3,10 +3,10 @@ package org.kivislime.tennisscoreboard.repository;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.kivislime.tennisscoreboard.config.PaginationConfig;
+import org.kivislime.tennisscoreboard.domain.Match;
 import org.kivislime.tennisscoreboard.exception.MatchRepositoryException;
 import org.kivislime.tennisscoreboard.exception.MatchesNotFoundException;
-import org.kivislime.tennisscoreboard.domain.Match;
-import org.kivislime.tennisscoreboard.config.PaginationConfig;
 import org.kivislime.tennisscoreboard.util.HibernateUtil;
 
 import java.util.List;
@@ -51,13 +51,13 @@ public class MatchRepositoryImpl implements MatchRepository {
                     .getResultList();
 
             if (matches.isEmpty()) {
-                throw new MatchesNotFoundException("Matches not found in match repository for player: " + playerName +
-                        ", and page number: " + pageNumber);
+                throw new MatchesNotFoundException(String.format("Matches not found in match repository for player: %s, and page number: %s",
+                        playerName, pageNumber));
             }
 
             return matches;
         } catch (HibernateException e) {
-            throw new MatchRepositoryException("Error when receiving matches by player name: " + playerName, e);
+            throw new MatchRepositoryException(String.format("Error when receiving matches by player name: %s", playerName), e);
         }
     }
 
@@ -71,7 +71,7 @@ public class MatchRepositoryImpl implements MatchRepository {
             Long count = query.uniqueResult();
             return count != null ? count : 0L;
         } catch (HibernateException e) {
-            throw new MatchRepositoryException("Error when retrieving total matches for player: " + playerName, e);
+            throw new MatchRepositoryException(String.format("Error when retrieving total matches for player: %s", playerName), e);
         }
     }
 
@@ -82,7 +82,7 @@ public class MatchRepositoryImpl implements MatchRepository {
             session.getTransaction().commit();
             return match;
         } catch (HibernateException e) {
-            throw new MatchRepositoryException("Error when adding match: " + match, e);
+            throw new MatchRepositoryException(String.format("Error when adding match: %s", match), e);
         }
     }
 }

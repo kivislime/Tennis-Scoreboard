@@ -1,13 +1,9 @@
 package org.kivislime.tennisscoreboard.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.kivislime.tennisscoreboard.domain.PlayerNumber;
 import org.kivislime.tennisscoreboard.config.MatchConstants;
 import org.kivislime.tennisscoreboard.config.PaginationConfig;
-import org.kivislime.tennisscoreboard.domain.Match;
-import org.kivislime.tennisscoreboard.domain.MatchScore;
-import org.kivislime.tennisscoreboard.domain.Player;
-import org.kivislime.tennisscoreboard.domain.PlayerScore;
+import org.kivislime.tennisscoreboard.domain.*;
 import org.kivislime.tennisscoreboard.dto.MatchDto;
 import org.kivislime.tennisscoreboard.dto.MatchScoreDto;
 import org.kivislime.tennisscoreboard.dto.PlayerDto;
@@ -18,7 +14,10 @@ import org.kivislime.tennisscoreboard.mapper.PlayerMapper;
 import org.kivislime.tennisscoreboard.mapper.PlayerScoreMapper;
 import org.kivislime.tennisscoreboard.repository.MatchRepository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -100,7 +99,7 @@ public class MatchServiceImpl implements MatchService {
         UUID uuid = UUID.fromString(matchUuid);
         return Optional.ofNullable(currentMatches.get(uuid))
                 .map(matchMapper::matchScoreToDto)
-                .orElseThrow(() -> new MatchScoreException("Match score not found for id: " + matchUuid));
+                .orElseThrow(() -> new MatchScoreException(String.format("Match score not found for id: %s", matchUuid)));
     }
 
     @Override
@@ -109,7 +108,7 @@ public class MatchServiceImpl implements MatchService {
         MatchScore matchScore = currentMatches.get(uuid);
 
         if (matchScore == null) {
-            throw new MatchScoreException("Match score not found for id: " + uuid);
+            throw new MatchScoreException(String.format("Match score not found for id: %s", uuid));
         }
 
         MatchDto match = matchScore.getMatchDto();
