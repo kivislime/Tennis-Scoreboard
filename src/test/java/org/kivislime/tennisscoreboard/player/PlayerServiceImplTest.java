@@ -45,24 +45,24 @@ public class PlayerServiceImplTest {
                 .name("Rafael")
                 .build();
 
-        when(playerRepository.getPlayer("Rafael"))
+        when(playerRepository.findByName("Rafael"))
                 .thenReturn(Optional.of(existingPlayer));
 
         Optional<PlayerDto> result = playerService.getPlayer("Rafael");
 
         assertTrue(result.isPresent());
         assertEquals("Rafael", result.get().getName());
-        verify(playerRepository).getPlayer("Rafael");
+        verify(playerRepository).findByName("Rafael");
     }
 
     @Test
     void testGetPlayer_WhenNotExists_ShouldReturnEmptyOptional() {
-        when(playerRepository.getPlayer("Novak"))
+        when(playerRepository.findByName("Novak"))
                 .thenReturn(Optional.empty());
 
         Optional<PlayerDto> result = playerService.getPlayer("Novak");
 
         assertFalse(result.isPresent());
-        verify(playerRepository).getPlayer("Novak");
+        verify(playerRepository).findByName("Novak");
     }
 }

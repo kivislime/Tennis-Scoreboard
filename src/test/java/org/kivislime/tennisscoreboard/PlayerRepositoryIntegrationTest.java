@@ -42,19 +42,19 @@ class PlayerRepositoryIntegrationTest {
     }
 
     @Test
-    void getPlayer_shouldReturnExistingPlayer() {
+    void findByName() {
         Player player = Player.builder().name("ExistingPlayer").build();
         playerRepository.addPlayer(player);
 
-        var result = playerRepository.getPlayer("ExistingPlayer");
+        var result = playerRepository.findByName("ExistingPlayer");
 
         assertTrue(result.isPresent());
         assertEquals("ExistingPlayer", result.get().getName());
     }
 
     @Test
-    void getPlayer_shouldReturnEmptyIfNotFound() {
-        var result = playerRepository.getPlayer("GhostPlayer");
+    void findByName_shouldReturnEmptyIfNotFound() {
+        var result = playerRepository.findByName("GhostPlayer");
 
         assertTrue(result.isEmpty());
     }
