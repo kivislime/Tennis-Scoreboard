@@ -9,8 +9,8 @@ public class ValidatorUtil {
     private static final Pattern NAME_PATTERN = Pattern.compile("^[a-zA-Z]+$");
     private static final Pattern PAGE_PATTERN = Pattern.compile("[1-9]\\d*");
 
-    public static boolean isValidParameter(String name) {
-        return name != null && !name.isBlank();
+    public static boolean isValidParameter(String parameter) {
+        return parameter != null && !parameter.isBlank();
     }
 
     public static boolean isValidName(String name) {
@@ -31,6 +31,6 @@ public class ValidatorUtil {
     }
 
     public static boolean isValidPage(String page) {
-        return page != null && !page.isBlank() && PAGE_PATTERN.matcher(page).matches();
+        return isValidParameter(page) && PAGE_PATTERN.matcher(page).matches();
     }
 }
