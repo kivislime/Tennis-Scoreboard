@@ -1,11 +1,12 @@
 package org.kivislime.tennisscoreboard.domain;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import org.kivislime.tennisscoreboard.dto.MatchDto;
 
-import static org.kivislime.tennisscoreboard.config.MatchConstants.GAMES_BEFORE_TIE_BREAK;
-import static org.kivislime.tennisscoreboard.config.MatchConstants.GAMES_DIFFERENCE_TO_WIN_SET;
-import static org.kivislime.tennisscoreboard.config.MatchConstants.MAX_GAMES_IN_SET;
+import static org.kivislime.tennisscoreboard.config.MatchConstants.*;
 
 @Getter
 @EqualsAndHashCode
@@ -33,26 +34,30 @@ public final class MatchScore {
         }
     }
 
-    private void processPoints(PlayerScore playerWinner, PlayerScore playerLoser) {
-        if (playerLoser.hasAdvantage()) {
-            playerLoser.loseAdvantage();
+    private void processPoints(PlayerScore winner, PlayerScore loser) {
+        if (winner.hasAdvantage()) {
+            winner.winGame();
+            loser.loseGame();
             return;
         }
 
-        if (playerWinner.getPoints() == Point.FORTY) {
-            if (playerLoser.getPoints() == Point.FORTY) {
-                playerWinner.setAdvantage();
-            } else {
-                playerWinner.winGame();
-                playerLoser.loseGame();
-            }
-        } else if (playerWinner.hasAdvantage()) {
-            playerWinner.winGame();
-            playerLoser.loseGame();
-        } else {
-            playerWinner.winPoint();
+        if (loser.hasAdvantage()) {
+            loser.loseAdvantage();
+            return;
         }
 
+        if (winner.getPoints() == Point.FORTY && loser.getPoints() == Point.FORTY) {
+            winner.setAdvantage();
+            return;
+        }
+
+        if (winner.getPoints() == Point.FORTY) {
+            winner.winGame();
+            loser.loseGame();
+            return;
+        }
+
+        winner.winPoint();
     }
 
     private boolean isSetWon(PlayerScore player, PlayerScore opponent) {
