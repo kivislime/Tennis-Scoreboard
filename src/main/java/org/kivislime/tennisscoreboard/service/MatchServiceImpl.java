@@ -135,11 +135,8 @@ public class MatchServiceImpl implements MatchService {
 
     private MatchScoreDto buildFinishedMatchScoreDto(MatchDto match, PlayerNumber winner, PlayerScore first, PlayerScore second) {
 
-        PlayerDto firstPlayerDto = playerService.getPlayer(match.getFirstPlayer().getName())
-                .orElseGet(() -> playerService.addPlayer(match.getFirstPlayer().getName()));
-
-        PlayerDto secondPlayerDto = playerService.getPlayer(match.getSecondPlayer().getName())
-                .orElseGet(() -> playerService.addPlayer(match.getSecondPlayer().getName()));
+        PlayerDto firstPlayerDto = playerService.findOrCreatePlayer(match.getFirstPlayer().getName());
+        PlayerDto secondPlayerDto = playerService.findOrCreatePlayer(match.getSecondPlayer().getName());
 
         Player firstPlayer = playerMapper.playerDtoToPlayer(firstPlayerDto);
         Player secondPlayer = playerMapper.playerDtoToPlayer(secondPlayerDto);
