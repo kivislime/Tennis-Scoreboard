@@ -150,7 +150,7 @@
 <script>
     function loadMatches(pageNumber = 1) {
         const playerName = document.getElementById("playerFilter").value.trim();
-        let url = `/tennis-scoreboard/matches?page=\${pageNumber}`;
+        let url = `/matches?page=\${pageNumber}`;
         if (playerName) {
             url += `&filter_by_player_name=\${encodeURIComponent(playerName)}`;
         }

@@ -191,7 +191,7 @@
     }
 
     function fetchScore() {
-        fetch(`/tennis-scoreboard/match-score?uuid=\${uuid}`)
+        fetch(`/match-score?uuid=\${uuid}`)
             .then(res => {
                 if (!res.ok) return res.json().then(data => {
                     throw new Error(data.message || 'Error fetching data')
@@ -205,7 +205,7 @@
     }
 
     function addScore(playerNumber) {
-        fetch(`/tennis-scoreboard/match-score?uuid=\${uuid}&player_number=\${playerNumber}`, {
+        fetch(`/match-score?uuid=\${uuid}&player_number=\${playerNumber}`, {
             method: "POST"
         })
             .then(res => {
