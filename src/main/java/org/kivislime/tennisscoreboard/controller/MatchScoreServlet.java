@@ -14,6 +14,7 @@ import org.kivislime.tennisscoreboard.util.ServletUtil;
 import org.kivislime.tennisscoreboard.util.ValidatorUtil;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @WebServlet("/match-score")
 public class MatchScoreServlet extends HttpServlet {
@@ -58,21 +59,19 @@ public class MatchScoreServlet extends HttpServlet {
 
         try {
             int playerNumberInt = Integer.parseInt(playerNumberStr);
-            PlayerNumber playerNumber;
-            if (PlayerNumber.fromInt(playerNumberInt).isPresent()) {
-                playerNumber = PlayerNumber.FIRST;
-            } else if (PlayerNumber.fromInt(playerNumberInt).isPresent()) {
-                playerNumber = PlayerNumber.SECOND;
-            } else {
+            Optional<PlayerNumber> playerNumberOptional = PlayerNumber.fromInt(playerNumberInt);
+            if (playerNumberOptional.isEmpty()) {
                 ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Invalid player number, must be 1 or 2.");
                 ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
                 return;
             }
+            PlayerNumber playerNumber = playerNumberOptional.get();
 
             MatchScoreDto matchScoreDto = matchService.handleScoring(matchId, playerNumber);
             String matchScoreJson = JsonUtil.toJson(matchScoreDto);
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write(matchScoreJson);
+
         } catch (NumberFormatException e) {
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Invalid player number,  must be 1 or 2.");
             ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
