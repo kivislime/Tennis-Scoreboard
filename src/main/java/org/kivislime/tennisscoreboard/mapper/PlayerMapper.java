@@ -10,6 +10,4 @@ public interface PlayerMapper {
     PlayerMapper INSTANCE = Mappers.getMapper(PlayerMapper.class);
 
     PlayerDto playerToDto(Player player);
-
-    Player playerDtoToPlayer(PlayerDto playerDto);
 }

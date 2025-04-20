@@ -11,7 +11,6 @@ import org.kivislime.tennisscoreboard.dto.PlayerDto;
 import org.kivislime.tennisscoreboard.exception.MatchScoreException;
 import org.kivislime.tennisscoreboard.exception.MaxGamesExceededException;
 import org.kivislime.tennisscoreboard.mapper.MatchMapper;
-import org.kivislime.tennisscoreboard.mapper.PlayerMapper;
 import org.kivislime.tennisscoreboard.mapper.PlayerScoreMapper;
 import org.kivislime.tennisscoreboard.repository.LiveMatchRepository;
 
@@ -20,7 +19,6 @@ import java.util.UUID;
 
 @Slf4j
 public class LiveMatchServiceImpl implements LiveMatchService {
-    private final PlayerMapper playerMapper = PlayerMapper.INSTANCE;
     private final PlayerScoreMapper playerScoreMapper = PlayerScoreMapper.INSTANCE;
     private final MatchMapper matchMapper = MatchMapper.INSTANCE;
 
@@ -32,10 +30,6 @@ public class LiveMatchServiceImpl implements LiveMatchService {
         this.playerService = playerService;
         this.finishedMatchService = finishedMatchService;
         this.liveMatchRepository = liveMatchRepository;
-    }
-
-    public MatchScore getMatchScore(UUID id) {
-        return liveMatchRepository.getByUuid(id);
     }
 
     @Override

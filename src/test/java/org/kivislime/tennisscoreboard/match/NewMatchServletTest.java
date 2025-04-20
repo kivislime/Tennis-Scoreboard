@@ -1,4 +1,4 @@
-package org.kivislime.tennisscoreboard.controller;
+package org.kivislime.tennisscoreboard.match;
 
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.kivislime.tennisscoreboard.controller.NewMatchServlet;
 import org.kivislime.tennisscoreboard.service.LiveMatchService;
 
 import java.io.PrintWriter;
@@ -52,7 +53,7 @@ class NewMatchServletTest {
 
         servlet.doPost(request, response);
 
-        verify(response).sendRedirect("/match-score.jsp?uuid=" + matchId.toString());
+        verify(response).sendRedirect("/match-score.jsp?uuid=" + matchId);
     }
 
     @Test

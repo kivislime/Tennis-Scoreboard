@@ -35,7 +35,6 @@ class LiveMatchServiceImplTest {
 
     @Test
     void createLiveMatchSession_shouldReturnUuid() {
-        UUID expectedUuid = UUID.randomUUID();
 
         when(liveMatchRepository.persist(any(), any()))
                 .thenAnswer(invocation -> invocation.getArgument(1)); // возвращаем матч как есть

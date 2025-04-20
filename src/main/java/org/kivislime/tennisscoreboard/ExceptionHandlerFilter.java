@@ -1,6 +1,9 @@
 package org.kivislime.tennisscoreboard;
 
-import jakarta.servlet.*;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.kivislime.tennisscoreboard.exception.*;
@@ -12,7 +15,7 @@ import java.io.IOException;
 public class ExceptionHandlerFilter implements Filter {
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException {
         try {
             filterChain.doFilter(servletRequest, servletResponse);
         } catch (MatchesNotFoundException e) {
