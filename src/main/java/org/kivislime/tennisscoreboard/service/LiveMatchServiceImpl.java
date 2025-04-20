@@ -2,8 +2,9 @@ package org.kivislime.tennisscoreboard.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.kivislime.tennisscoreboard.config.MatchConstants;
-import org.kivislime.tennisscoreboard.config.PaginationConfig;
-import org.kivislime.tennisscoreboard.domain.*;
+import org.kivislime.tennisscoreboard.domain.MatchScore;
+import org.kivislime.tennisscoreboard.domain.PlayerNumber;
+import org.kivislime.tennisscoreboard.domain.PlayerScore;
 import org.kivislime.tennisscoreboard.dto.MatchDto;
 import org.kivislime.tennisscoreboard.dto.MatchScoreDto;
 import org.kivislime.tennisscoreboard.dto.PlayerDto;
@@ -12,56 +13,29 @@ import org.kivislime.tennisscoreboard.exception.MaxGamesExceededException;
 import org.kivislime.tennisscoreboard.mapper.MatchMapper;
 import org.kivislime.tennisscoreboard.mapper.PlayerMapper;
 import org.kivislime.tennisscoreboard.mapper.PlayerScoreMapper;
-import org.kivislime.tennisscoreboard.repository.MatchRepository;
+import org.kivislime.tennisscoreboard.repository.LiveMatchRepository;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Slf4j
-public class MatchServiceImpl implements MatchService {
-    private final MatchRepository matchRepository;
-    private final MatchMapper matchMapper = MatchMapper.INSTANCE;
+public class LiveMatchServiceImpl implements LiveMatchService {
     private final PlayerMapper playerMapper = PlayerMapper.INSTANCE;
     private final PlayerScoreMapper playerScoreMapper = PlayerScoreMapper.INSTANCE;
+    private final MatchMapper matchMapper = MatchMapper.INSTANCE;
 
-    private static final Map<UUID, MatchScore> currentMatches = new ConcurrentHashMap<>();
     private final PlayerService playerService;
+    private final LiveMatchRepository liveMatchRepository;
+    private final FinishedMatchService finishedMatchService;
 
-    public MatchServiceImpl(MatchRepository matchRepository, PlayerService playerService) {
-        this.matchRepository = matchRepository;
+    public LiveMatchServiceImpl(PlayerService playerService, FinishedMatchService finishedMatchService, LiveMatchRepository liveMatchRepository) {
         this.playerService = playerService;
+        this.finishedMatchService = finishedMatchService;
+        this.liveMatchRepository = liveMatchRepository;
     }
 
-    @Override
-    public List<MatchDto> getMatches(Integer pageNumber) {
-        return matchRepository.getMatches(pageNumber)
-                .stream()
-                .map(matchMapper::matchToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public long getTotalPages() {
-        long totalMatches = matchRepository.getTotalMatches();
-        return calculateTotalPages(totalMatches);
-    }
-
-    @Override
-    public List<MatchDto> getMatchesByPlayerName(String playerName, Integer pageNumber) {
-        return matchRepository.getMatchesByPlayerName(playerName, pageNumber)
-                .stream()
-                .map(matchMapper::matchToDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public long getTotalPagesByPlayerName(String playerName) {
-        long totalMatches = matchRepository.getTotalMatchesByPlayerName(playerName);
-        return calculateTotalPages(totalMatches);
+    public MatchScore getMatchScore(UUID id) {
+        return liveMatchRepository.getByUuid(id);
     }
 
     @Override
@@ -86,10 +60,10 @@ public class MatchServiceImpl implements MatchService {
                 .matchDto(newMatch)
                 .build();
 
-        currentMatches.put(uuid, matchScore);
+        MatchScore currentScore = liveMatchRepository.persist(uuid, matchScore);
 
-        log.info("New live match created, UUID: {}", uuid);
-        log.info("Current size of lives matches: {}", currentMatches.size());
+        log.info("New live match created: : {}", currentScore.toString());
+        log.info("Current size of lives matches: {}", liveMatchRepository.totalLiveMatches());
 
         return uuid;
     }
@@ -97,7 +71,7 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public MatchScoreDto getLiveMatchScore(String matchUuid) {
         UUID uuid = UUID.fromString(matchUuid);
-        return Optional.ofNullable(currentMatches.get(uuid))
+        return Optional.ofNullable(liveMatchRepository.getByUuid(uuid))
                 .map(matchMapper::matchScoreToDto)
                 .orElseThrow(() -> new MatchScoreException(String.format("Match score not found for id: %s", matchUuid)));
     }
@@ -105,7 +79,7 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public MatchScoreDto handleScoring(String matchId, PlayerNumber playerNumber) {
         UUID uuid = UUID.fromString(matchId);
-        MatchScore matchScore = currentMatches.get(uuid);
+        MatchScore matchScore = liveMatchRepository.getByUuid(uuid);
 
         if (matchScore == null) {
             throw new MatchScoreException(String.format("Match score not found for id: %s", uuid));
@@ -118,15 +92,16 @@ public class MatchServiceImpl implements MatchService {
         matchScore.processPointWinner(playerNumber);
 
         if (matchScore.isMaxGames()) {
-            currentMatches.remove(uuid);
-            throw new MaxGamesExceededException("Maximum number of games. The match reached the limit of games in the set");
+            //TODO: проверить, как работает?
+            MatchScore matchScoreException = liveMatchRepository.remove(uuid);
+            throw new MaxGamesExceededException(String.format("Maximum number of games. The match reached the limit of games in the set: %s", matchScoreException.toString()));
         }
 
         if (firstPlayerScore.getSets() >= MatchConstants.MAX_SETS_FOR_WIN) {
-            currentMatches.remove(uuid);
+            liveMatchRepository.remove(uuid);
             return buildFinishedMatchScoreDto(match, PlayerNumber.FIRST, firstPlayerScore, secondPlayerScore);
         } else if (secondPlayerScore.getSets() >= MatchConstants.MAX_SETS_FOR_WIN) {
-            currentMatches.remove(uuid);
+            liveMatchRepository.remove(uuid);
             return buildFinishedMatchScoreDto(match, PlayerNumber.SECOND, firstPlayerScore, secondPlayerScore);
         }
 
@@ -135,32 +110,19 @@ public class MatchServiceImpl implements MatchService {
 
     private MatchScoreDto buildFinishedMatchScoreDto(MatchDto match, PlayerNumber winner, PlayerScore first, PlayerScore second) {
 
-        PlayerDto firstPlayerDto = playerService.findOrCreatePlayer(match.getFirstPlayer().getName());
-        PlayerDto secondPlayerDto = playerService.findOrCreatePlayer(match.getSecondPlayer().getName());
+        PlayerDto firstPlayer = playerService.findOrCreatePlayer(match.getFirstPlayer().getName());
+        PlayerDto secondPlayer = playerService.findOrCreatePlayer(match.getSecondPlayer().getName());
 
-        Player firstPlayer = playerMapper.playerDtoToPlayer(firstPlayerDto);
-        Player secondPlayer = playerMapper.playerDtoToPlayer(secondPlayerDto);
-
-        Match resultMatch = matchRepository.addMatch(Match.builder()
+        MatchDto resultMatch = finishedMatchService.persistFinishedMatch(MatchDto.builder()
                 .firstPlayer(firstPlayer)
                 .secondPlayer(secondPlayer)
                 .winnerPlayer(winner == PlayerNumber.FIRST ? firstPlayer : secondPlayer)
                 .build());
 
-        MatchDto resultMatchDto = matchMapper.matchToDto(resultMatch);
-
         return MatchScoreDto.builder()
-                .matchDto(resultMatchDto)
+                .matchDto(resultMatch)
                 .firstPlayerScore(playerScoreMapper.playerScoreToDto(first))
                 .secondPlayerScore(playerScoreMapper.playerScoreToDto(second))
                 .build();
-    }
-
-    private long calculateTotalPages(long totalMatches) {
-        return (int) Math.ceil((double) totalMatches / PaginationConfig.PAGE_SIZE);
-    }
-
-    public MatchScore getMatchScore(UUID id) {
-        return currentMatches.get(id);
     }
 }

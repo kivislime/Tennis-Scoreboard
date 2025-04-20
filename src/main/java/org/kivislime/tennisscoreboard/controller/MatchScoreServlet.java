@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.kivislime.tennisscoreboard.ErrorResponse;
 import org.kivislime.tennisscoreboard.domain.PlayerNumber;
 import org.kivislime.tennisscoreboard.dto.MatchScoreDto;
-import org.kivislime.tennisscoreboard.service.MatchService;
+import org.kivislime.tennisscoreboard.service.LiveMatchService;
 import org.kivislime.tennisscoreboard.util.JsonUtil;
 import org.kivislime.tennisscoreboard.util.ServletUtil;
 import org.kivislime.tennisscoreboard.util.ValidatorUtil;
@@ -18,12 +18,12 @@ import java.util.Optional;
 
 @WebServlet("/match-score")
 public class MatchScoreServlet extends HttpServlet {
-    private MatchService matchService;
+    private LiveMatchService liveMatchService;
 
     @Override
     public void init() {
         ServletContext context = getServletContext();
-        matchService = (MatchService) context.getAttribute("matchService");
+        liveMatchService = (LiveMatchService) context.getAttribute("liveMatchService");
     }
 
     @Override
@@ -37,7 +37,7 @@ public class MatchScoreServlet extends HttpServlet {
             return;
         }
 
-        MatchScoreDto matchScoreDto = matchService.getLiveMatchScore(matchId);
+        MatchScoreDto matchScoreDto = liveMatchService.getLiveMatchScore(matchId);
         String matchScoreJson = JsonUtil.toJson(matchScoreDto);
 
         resp.setStatus(HttpServletResponse.SC_OK);
@@ -67,7 +67,7 @@ public class MatchScoreServlet extends HttpServlet {
             }
             PlayerNumber playerNumber = playerNumberOptional.get();
 
-            MatchScoreDto matchScoreDto = matchService.handleScoring(matchId, playerNumber);
+            MatchScoreDto matchScoreDto = liveMatchService.handleScoring(matchId, playerNumber);
             String matchScoreJson = JsonUtil.toJson(matchScoreDto);
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write(matchScoreJson);

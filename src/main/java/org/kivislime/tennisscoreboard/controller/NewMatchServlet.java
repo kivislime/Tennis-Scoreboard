@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.kivislime.tennisscoreboard.ErrorResponse;
-import org.kivislime.tennisscoreboard.service.MatchService;
+import org.kivislime.tennisscoreboard.service.LiveMatchService;
 import org.kivislime.tennisscoreboard.util.ServletUtil;
 import org.kivislime.tennisscoreboard.util.ValidatorUtil;
 
@@ -15,12 +15,12 @@ import java.util.UUID;
 
 @WebServlet("/new-match")
 public class NewMatchServlet extends HttpServlet {
-    private MatchService matchService;
+    private LiveMatchService liveMatchService;
 
     @Override
     public void init() {
         ServletContext context = getServletContext();
-        matchService = (MatchService) context.getAttribute("matchService");
+        liveMatchService = (LiveMatchService) context.getAttribute("liveMatchService");
     }
 
     @Override
@@ -40,9 +40,9 @@ public class NewMatchServlet extends HttpServlet {
             return;
         }
 
-        UUID matchId = matchService.createLiveMatchSession(firstPlayerName, secondPlayerName);
+        UUID matchId = liveMatchService.createLiveMatchSession(firstPlayerName, secondPlayerName);
         String matchIdString = matchId.toString();
 
-        resp.sendRedirect(req.getContextPath() + "/match-score.jsp?uuid=" + matchIdString);
+        resp.sendRedirect(req.getContextPath() + "match-score.jsp?uuid=" + matchIdString);
     }
 }

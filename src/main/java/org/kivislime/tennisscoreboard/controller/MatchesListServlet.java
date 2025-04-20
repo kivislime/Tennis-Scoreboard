@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.kivislime.tennisscoreboard.ErrorResponse;
 import org.kivislime.tennisscoreboard.dto.MatchDto;
-import org.kivislime.tennisscoreboard.service.MatchService;
+import org.kivislime.tennisscoreboard.service.MatchQueryService;
 import org.kivislime.tennisscoreboard.util.JsonUtil;
 import org.kivislime.tennisscoreboard.util.ServletUtil;
 import org.kivislime.tennisscoreboard.util.ValidatorUtil;
@@ -19,12 +19,12 @@ import java.util.Map;
 
 @WebServlet("/matches")
 public class MatchesListServlet extends HttpServlet {
-    private MatchService matchService;
+    private MatchQueryService matchQueryService;
 
     @Override
     public void init() {
         ServletContext context = getServletContext();
-        matchService = (MatchService) context.getAttribute("matchService");
+        matchQueryService = (MatchQueryService) context.getAttribute("matchService");
     }
 
     @Override
@@ -49,15 +49,15 @@ public class MatchesListServlet extends HttpServlet {
         long totalPages;
 
         if (ValidatorUtil.isValidName(playerName)) {
-            totalPages = matchService.getTotalPagesByPlayerName(playerName);
-            matchDtoList = matchService.getMatchesByPlayerName(playerName, pageNumber);
+            totalPages = matchQueryService.getTotalPagesByPlayerName(playerName);
+            matchDtoList = matchQueryService.getMatchesByPlayerName(playerName, pageNumber);
         } else if (ValidatorUtil.isValidParameter(playerName)) {
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "The length of the name must be more than 2, but less than 16 and consist only of Latin letters.");
             ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
             return;
         } else {
-            totalPages = matchService.getTotalPages();
-            matchDtoList = matchService.getMatches(pageNumber);
+            totalPages = matchQueryService.getTotalPages();
+            matchDtoList = matchQueryService.getMatches(pageNumber);
         }
 
         Map<String, Object> responseData = new HashMap<>();
