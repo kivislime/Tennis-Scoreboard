@@ -92,7 +92,6 @@ public class LiveMatchServiceImpl implements LiveMatchService {
         matchScore.processPointWinner(playerNumber);
 
         if (matchScore.isMaxGames()) {
-            //TODO: проверить, как работает?
             MatchScore matchScoreException = liveMatchRepository.remove(uuid);
             throw new MaxGamesExceededException(String.format("Maximum number of games. The match reached the limit of games in the set: %s", matchScoreException.toString()));
         }
