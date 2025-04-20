@@ -1,4 +1,4 @@
-package org.kivislime.tennisscoreboard.match;
+package org.kivislime.tennisscoreboard.controller;
 
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
@@ -6,87 +6,84 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.kivislime.tennisscoreboard.controller.NewMatchServlet;
-import org.kivislime.tennisscoreboard.service.MatchService;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.kivislime.tennisscoreboard.service.LiveMatchService;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-public class NewMatchServletTest {
+class NewMatchServletTest {
 
-    @Mock
+    private NewMatchServlet servlet;
+    private LiveMatchService liveMatchService;
     private HttpServletRequest request;
-    @Mock
     private HttpServletResponse response;
-    @Mock
     private ServletContext servletContext;
-    @Mock
-    private ServletConfig servletConfig;
-    @Mock
-    private MatchService matchService;
-
-    private NewMatchServlet servletUnderTest;
-    private StringWriter responseWriter;
 
     @BeforeEach
-    public void setup() throws Exception {
-        MockitoAnnotations.openMocks(this);
+    void setUp() throws Exception {
+        servlet = new NewMatchServlet();
 
+        liveMatchService = mock(LiveMatchService.class);
+        request = mock(HttpServletRequest.class);
+        response = mock(HttpServletResponse.class);
+        servletContext = mock(ServletContext.class);
+
+        when(servletContext.getAttribute("liveMatchService")).thenReturn(liveMatchService);
+
+        ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getAttribute("matchService")).thenReturn(matchService);
 
-        servletUnderTest = new NewMatchServlet();
-        servletUnderTest.init(servletConfig);
-
-        responseWriter = new StringWriter();
-        when(response.getWriter()).thenReturn(new PrintWriter(responseWriter));
+        servlet.init(servletConfig);
     }
 
     @Test
-    public void testDoPost_InvalidNames_ReturnsBadRequest() throws Exception {
-        when(request.getParameter("first_player_name")).thenReturn("a");
+    void doPost_shouldRedirectOnValidNames() throws Exception {
+        when(request.getParameter("first_player_name")).thenReturn("Alice");
         when(request.getParameter("second_player_name")).thenReturn("Bob");
 
-        servletUnderTest.doPost(request, response);
+        UUID matchId = UUID.randomUUID();
+        when(liveMatchService.createLiveMatchSession("Alice", "Bob")).thenReturn(matchId);
 
-        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        String jsonError = responseWriter.toString();
-        assertTrue(jsonError.contains("The length of the name must be more than 2"),
-                "Expected error message for invalid name");
+        when(request.getContextPath()).thenReturn("/");
+
+        servlet.doPost(request, response);
+
+        verify(response).sendRedirect("/match-score.jsp?uuid=" + matchId.toString());
     }
 
     @Test
-    public void testDoPost_SameNames_ReturnsBadRequest() throws Exception {
+    void doPost_shouldReturnBadRequestIfNamesAreInvalid() throws Exception {
+        when(request.getParameter("first_player_name")).thenReturn("A");
+        when(request.getParameter("second_player_name")).thenReturn("Bob");
+
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        when(response.getWriter()).thenReturn(pw);
+
+        servlet.doPost(request, response);
+
+        verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        String jsonResponse = sw.toString();
+        assertTrue(jsonResponse.contains("INVALID_PARAMETER"));
+    }
+
+    @Test
+    void doPost_shouldReturnBadRequestIfNamesAreEqual() throws Exception {
         when(request.getParameter("first_player_name")).thenReturn("Alice");
         when(request.getParameter("second_player_name")).thenReturn("Alice");
 
-        servletUnderTest.doPost(request, response);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        when(response.getWriter()).thenReturn(pw);
+
+        servlet.doPost(request, response);
 
         verify(response).setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        String jsonError = responseWriter.toString();
-        assertTrue(jsonError.contains("Players name must be different."),
-                "Expected error message for same names");
-    }
-
-    @Test
-    public void testDoPost_ValidNames_RedirectsToMatchScore() throws Exception {
-        when(request.getParameter("first_player_name")).thenReturn("Alice");
-        when(request.getParameter("second_player_name")).thenReturn("Bob");
-
-        UUID dummyUuid = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-        when(matchService.createLiveMatchSession("Alice", "Bob")).thenReturn(dummyUuid);
-
-        when(request.getContextPath()).thenReturn("/TennisScoreboard");
-
-        servletUnderTest.doPost(request, response);
-
-        verify(response).sendRedirect("/TennisScoreboard/match-score.jsp?uuid=" + dummyUuid.toString());
+        String jsonResponse = sw.toString();
+        assertTrue(jsonResponse.contains("Players name must be different"));
     }
 }

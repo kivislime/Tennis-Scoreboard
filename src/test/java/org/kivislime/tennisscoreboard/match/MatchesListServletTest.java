@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kivislime.tennisscoreboard.controller.MatchesListServlet;
 import org.kivislime.tennisscoreboard.dto.MatchDto;
-import org.kivislime.tennisscoreboard.service.MatchService;
+import org.kivislime.tennisscoreboard.service.MatchQueryService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -32,7 +32,7 @@ public class MatchesListServletTest {
     @Mock
     private ServletConfig servletConfig;
     @Mock
-    private MatchService matchService;
+    private MatchQueryService matchQueryService;
 
     private MatchesListServlet servletUnderTest;
     private StringWriter responseWriter;
@@ -42,7 +42,7 @@ public class MatchesListServletTest {
         MockitoAnnotations.openMocks(this);
 
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getAttribute("matchService")).thenReturn(matchService);
+        when(servletContext.getAttribute("matchService")).thenReturn(matchQueryService);
 
         servletUnderTest = new MatchesListServlet();
         servletUnderTest.init(servletConfig);
@@ -82,8 +82,8 @@ public class MatchesListServletTest {
         when(request.getParameter("page")).thenReturn("1");
         when(request.getParameter("filter_by_player_name")).thenReturn("");
 
-        when(matchService.getMatches(1)).thenReturn(Collections.emptyList());
-        when(matchService.getTotalPages()).thenReturn(0L);
+        when(matchQueryService.getMatches(1)).thenReturn(Collections.emptyList());
+        when(matchQueryService.getTotalPages()).thenReturn(0L);
 
         servletUnderTest.doGet(request, response);
 
@@ -98,8 +98,8 @@ public class MatchesListServletTest {
         MatchDto dummyMatch = MatchDto.builder().id(1L).build();
         List<MatchDto> dummyMatches = List.of(dummyMatch);
 
-        when(matchService.getMatches(1)).thenReturn(dummyMatches);
-        when(matchService.getTotalPages()).thenReturn(1L);
+        when(matchQueryService.getMatches(1)).thenReturn(dummyMatches);
+        when(matchQueryService.getTotalPages()).thenReturn(1L);
 
         servletUnderTest.doGet(request, response);
 

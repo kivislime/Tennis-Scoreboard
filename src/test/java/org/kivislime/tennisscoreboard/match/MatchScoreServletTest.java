@@ -7,9 +7,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kivislime.tennisscoreboard.controller.MatchScoreServlet;
-import org.kivislime.tennisscoreboard.dto.MatchScoreDto;
 import org.kivislime.tennisscoreboard.domain.PlayerNumber;
-import org.kivislime.tennisscoreboard.service.MatchService;
+import org.kivislime.tennisscoreboard.dto.MatchScoreDto;
+import org.kivislime.tennisscoreboard.service.LiveMatchService;
+import org.kivislime.tennisscoreboard.service.MatchQueryService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -32,7 +33,10 @@ class MatchScoreServletTest {
     @Mock
     private ServletConfig servletConfig;
     @Mock
-    private MatchService matchService;
+    private MatchQueryService matchQueryService;
+    @Mock
+    private LiveMatchService liveMatchService;
+
     private MatchScoreServlet servletUnderTest;
     private StringWriter responseWriter;
 
@@ -41,7 +45,10 @@ class MatchScoreServletTest {
         MockitoAnnotations.openMocks(this);
 
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getAttribute("matchService")).thenReturn(matchService);
+        when(servletContext.getAttribute("matchService")).thenReturn(matchQueryService);
+
+        when(servletConfig.getServletContext()).thenReturn(servletContext);
+        when(servletContext.getAttribute("liveMatchService")).thenReturn(liveMatchService);
 
         servletUnderTest = new MatchScoreServlet();
         servletUnderTest.init(servletConfig);
@@ -67,7 +74,7 @@ class MatchScoreServletTest {
         when(request.getParameter("uuid")).thenReturn(validUuid);
 
         MatchScoreDto dummyDto = MatchScoreDto.builder().build();
-        when(matchService.getLiveMatchScore(validUuid)).thenReturn(dummyDto);
+        when(liveMatchService.getLiveMatchScore(validUuid)).thenReturn(dummyDto);
 
         servletUnderTest.doGet(request, response);
 
@@ -110,7 +117,7 @@ class MatchScoreServletTest {
         when(request.getParameter("player_number")).thenReturn("1");
 
         MatchScoreDto dummyDto = MatchScoreDto.builder().build();
-        when(matchService.handleScoring(validUuid, PlayerNumber.FIRST)).thenReturn(dummyDto);
+        when(liveMatchService.handleScoring(validUuid, PlayerNumber.FIRST)).thenReturn(dummyDto);
 
         servletUnderTest.doPost(request, response);
 
