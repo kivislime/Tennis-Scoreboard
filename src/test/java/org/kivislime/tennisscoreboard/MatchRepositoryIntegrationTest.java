@@ -27,20 +27,20 @@ class MatchRepositoryIntegrationTest {
 
     @Test
     void getTotalMatches_shouldReturnCorrectValueFromImportSql() {
-        long totalMatches = matchRepository.getTotalMatches();
+        long totalMatches = matchRepository.count();
         assertEquals(2, totalMatches);
     }
 
     @Test
     void getMatches_shouldReturnPaginatedData() {
-        List<Match> matches = matchRepository.getMatches(1);
+        List<Match> matches = matchRepository.findAll(1);
         assertFalse(matches.isEmpty());
         assertTrue(matches.size() <= PaginationConfig.PAGE_SIZE);
     }
 
     @Test
     void getMatchesByPlayerName_shouldReturnMatchesForKnownPlayer() {
-        List<Match> matches = matchRepository.getMatchesByPlayerName("Johan", 1);
+        List<Match> matches = matchRepository.findByPlayerName("Johan", 1);
         assertFalse(matches.isEmpty());
     }
 
@@ -51,7 +51,7 @@ class MatchRepositoryIntegrationTest {
         Player p2 = session.get(Player.class, 2L);
 
         Match newMatch = new Match(null, p1, p2, p1);
-        Match added = matchRepository.addMatch(newMatch);
+        Match added = matchRepository.persist(newMatch);
 
         assertNotNull(added.getId());
         session.close();

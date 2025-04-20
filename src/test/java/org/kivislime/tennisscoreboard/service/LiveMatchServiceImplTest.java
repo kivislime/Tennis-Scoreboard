@@ -57,7 +57,7 @@ class LiveMatchServiceImplTest {
                         .build())
                 .build();
 
-        when(liveMatchRepository.getByUuid(matchId)).thenReturn(matchScore);
+        when(liveMatchRepository.findByUuid(matchId)).thenReturn(matchScore);
 
         var result = liveMatchService.getLiveMatchScore(matchId.toString());
 
@@ -68,7 +68,7 @@ class LiveMatchServiceImplTest {
     @Test
     void getLiveMatchScore_shouldThrowIfNotFound() {
         UUID id = UUID.randomUUID();
-        when(liveMatchRepository.getByUuid(id)).thenReturn(null);
+        when(liveMatchRepository.findByUuid(id)).thenReturn(null);
 
         assertThrows(MatchScoreException.class,
                 () -> liveMatchService.getLiveMatchScore(id.toString()));
@@ -77,7 +77,7 @@ class LiveMatchServiceImplTest {
     @Test
     void handleScoring_shouldThrowIfMatchNotFound() {
         UUID id = UUID.randomUUID();
-        when(liveMatchRepository.getByUuid(id)).thenReturn(null);
+        when(liveMatchRepository.findByUuid(id)).thenReturn(null);
 
         assertThrows(MatchScoreException.class,
                 () -> liveMatchService.handleScoring(id.toString(), PlayerNumber.FIRST));
@@ -106,8 +106,8 @@ class LiveMatchServiceImplTest {
                 .secondPlayerScore(second)
                 .build();
 
-        when(liveMatchRepository.getByUuid(id)).thenReturn(matchScore);
-        when(liveMatchRepository.remove(id)).thenReturn(matchScore);
+        when(liveMatchRepository.findByUuid(id)).thenReturn(matchScore);
+        when(liveMatchRepository.removeByUuid(id)).thenReturn(matchScore);
 
         assertThrows(MaxGamesExceededException.class, () ->
                 liveMatchService.handleScoring(id.toString(), PlayerNumber.FIRST)
@@ -134,12 +134,12 @@ class LiveMatchServiceImplTest {
                 .secondPlayerScore(secondScore)
                 .build();
 
-        when(liveMatchRepository.getByUuid(id)).thenReturn(matchScore);
+        when(liveMatchRepository.findByUuid(id)).thenReturn(matchScore);
         when(finishedMatchService.persistFinishedMatch(any())).thenReturn(dto);
 
         var result = liveMatchService.handleScoring(id.toString(), PlayerNumber.FIRST);
 
         assertNotNull(result.getMatchDto());
-        verify(liveMatchRepository).remove(id);
+        verify(liveMatchRepository).removeByUuid(id);
     }
 }

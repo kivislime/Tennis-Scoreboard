@@ -17,30 +17,30 @@ public class MatchQueryServiceImpl implements MatchQueryService {
     }
 
     @Override
-    public List<MatchDto> getMatches(Integer pageNumber) {
-        return matchRepository.getMatches(pageNumber)
+    public List<MatchDto> findMatches(Integer pageNumber) {
+        return matchRepository.findAll(pageNumber)
                 .stream()
                 .map(matchMapper::matchToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public long getTotalPages() {
-        long totalMatches = matchRepository.getTotalMatches();
+    public long countPages() {
+        long totalMatches = matchRepository.count();
         return calculateTotalPages(totalMatches);
     }
 
     @Override
-    public List<MatchDto> getMatchesByPlayerName(String playerName, Integer pageNumber) {
-        return matchRepository.getMatchesByPlayerName(playerName, pageNumber)
+    public List<MatchDto> findMatchesByPlayer(String playerName, Integer pageNumber) {
+        return matchRepository.findByPlayerName(playerName, pageNumber)
                 .stream()
                 .map(matchMapper::matchToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public long getTotalPagesByPlayerName(String playerName) {
-        long totalMatches = matchRepository.getTotalMatchesByPlayerName(playerName);
+    public long countPagesByPlayer(String playerName) {
+        long totalMatches = matchRepository.countByPlayerName(playerName);
         return calculateTotalPages(totalMatches);
     }
 

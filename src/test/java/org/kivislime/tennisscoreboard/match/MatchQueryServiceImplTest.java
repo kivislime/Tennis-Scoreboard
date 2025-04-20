@@ -27,16 +27,16 @@ class MatchQueryServiceImplTest {
     @Test
     void getMatches_shouldReturnDtoList() {
         Match match = new Match();
-        when(matchRepository.getMatches(1)).thenReturn(List.of(match));
+        when(matchRepository.findAll(1)).thenReturn(List.of(match));
 
-        List<MatchDto> matches = matchService.getMatches(1);
+        List<MatchDto> matches = matchService.findMatches(1);
         assertEquals(1, matches.size());
     }
 
     @Test
     void getTotalPages_shouldReturnCorrectPages() {
-        when(matchRepository.getTotalMatches()).thenReturn(15L);
-        long totalPages = matchService.getTotalPages();
+        when(matchRepository.count()).thenReturn(15L);
+        long totalPages = matchService.countPages();
         assertEquals(2, totalPages);
     }
 }

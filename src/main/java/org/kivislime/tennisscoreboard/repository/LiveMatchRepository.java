@@ -7,9 +7,9 @@ import java.util.UUID;
 public interface LiveMatchRepository {
     MatchScore persist(UUID uuid, MatchScore matchScore);
 
-    MatchScore remove(UUID uuid);
+    MatchScore findByUuid(UUID id);
 
-    MatchScore getByUuid(UUID id);
+    MatchScore removeByUuid(UUID uuid);
 
-    long totalLiveMatches();
+    long count();
 }

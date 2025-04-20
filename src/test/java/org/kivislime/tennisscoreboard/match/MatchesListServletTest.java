@@ -82,8 +82,8 @@ public class MatchesListServletTest {
         when(request.getParameter("page")).thenReturn("1");
         when(request.getParameter("filter_by_player_name")).thenReturn("");
 
-        when(matchQueryService.getMatches(1)).thenReturn(Collections.emptyList());
-        when(matchQueryService.getTotalPages()).thenReturn(0L);
+        when(matchQueryService.findMatches(1)).thenReturn(Collections.emptyList());
+        when(matchQueryService.countPages()).thenReturn(0L);
 
         servletUnderTest.doGet(request, response);
 
@@ -98,8 +98,8 @@ public class MatchesListServletTest {
         MatchDto dummyMatch = MatchDto.builder().id(1L).build();
         List<MatchDto> dummyMatches = List.of(dummyMatch);
 
-        when(matchQueryService.getMatches(1)).thenReturn(dummyMatches);
-        when(matchQueryService.getTotalPages()).thenReturn(1L);
+        when(matchQueryService.findMatches(1)).thenReturn(dummyMatches);
+        when(matchQueryService.countPages()).thenReturn(1L);
 
         servletUnderTest.doGet(request, response);
 

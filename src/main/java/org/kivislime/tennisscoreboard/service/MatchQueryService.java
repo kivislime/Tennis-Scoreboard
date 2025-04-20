@@ -5,11 +5,11 @@ import org.kivislime.tennisscoreboard.dto.MatchDto;
 import java.util.List;
 
 public interface MatchQueryService {
-    List<MatchDto> getMatches(Integer pageNumber);
+    List<MatchDto> findMatches(Integer pageNumber);
 
-    long getTotalPages();
+    long countPages();
 
-    List<MatchDto> getMatchesByPlayerName(String playerName, Integer pageNumber);
+    List<MatchDto> findMatchesByPlayer(String playerName, Integer pageNumber);
 
-    long getTotalPagesByPlayerName(String playerName);
+    long countPagesByPlayer(String playerName);
 }

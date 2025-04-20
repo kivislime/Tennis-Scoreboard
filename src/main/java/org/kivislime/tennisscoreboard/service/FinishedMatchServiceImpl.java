@@ -15,7 +15,7 @@ public class FinishedMatchServiceImpl implements FinishedMatchService {
 
     @Override
     public MatchDto persistFinishedMatch(MatchDto build) {
-        Match match = matchRepository.addMatch(matchMapper.dtoToMatch(build));
+        Match match = matchRepository.persist(matchMapper.dtoToMatch(build));
         return matchMapper.matchToDto(match);
     }
 }

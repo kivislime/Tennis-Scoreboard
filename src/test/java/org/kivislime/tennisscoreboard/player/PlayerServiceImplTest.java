@@ -29,14 +29,14 @@ public class PlayerServiceImplTest {
                 .name("Roger")
                 .build();
 
-        when(playerRepository.addPlayer(any(Player.class)))
+        when(playerRepository.persist(any(Player.class)))
                 .thenReturn(savedPlayer);
 
-        PlayerDto result = playerService.addPlayer("Roger");
+        PlayerDto result = playerService.persist("Roger");
 
         assertNotNull(result);
         assertEquals("Roger", result.getName());
-        verify(playerRepository).addPlayer(any(Player.class));
+        verify(playerRepository).persist(any(Player.class));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class PlayerServiceImplTest {
         when(playerRepository.findByName("Rafael"))
                 .thenReturn(Optional.of(existingPlayer));
 
-        Optional<PlayerDto> result = playerService.getPlayer("Rafael");
+        Optional<PlayerDto> result = playerService.findPlayer("Rafael");
 
         assertTrue(result.isPresent());
         assertEquals("Rafael", result.get().getName());
@@ -60,7 +60,7 @@ public class PlayerServiceImplTest {
         when(playerRepository.findByName("Novak"))
                 .thenReturn(Optional.empty());
 
-        Optional<PlayerDto> result = playerService.getPlayer("Novak");
+        Optional<PlayerDto> result = playerService.findPlayer("Novak");
 
         assertFalse(result.isPresent());
         verify(playerRepository).findByName("Novak");

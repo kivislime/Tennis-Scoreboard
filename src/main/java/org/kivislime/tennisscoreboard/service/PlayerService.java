@@ -5,9 +5,9 @@ import org.kivislime.tennisscoreboard.dto.PlayerDto;
 import java.util.Optional;
 
 public interface PlayerService {
-    PlayerDto addPlayer(String playerName);
+    PlayerDto persist(String playerName);
 
-    Optional<PlayerDto> getPlayer(String firstPlayerName);
+    Optional<PlayerDto> findPlayer(String firstPlayerName);
 
     PlayerDto findOrCreatePlayer(String playerName);
 }

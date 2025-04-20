@@ -7,5 +7,5 @@ import java.util.Optional;
 public interface PlayerRepository {
     Optional<Player> findByName(String name);
 
-    Player addPlayer(Player player);
+    Player persist(Player player);
 }

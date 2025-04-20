@@ -5,13 +5,13 @@ import org.kivislime.tennisscoreboard.domain.Match;
 import java.util.List;
 
 public interface MatchRepository {
-    List<Match> getMatches(Integer pageNumber);
+    Match persist(Match match);
 
-    long getTotalMatches();
+    List<Match> findAll(Integer pageNumber);
 
-    List<Match> getMatchesByPlayerName(String playerName, Integer pageNumber);
+    List<Match> findByPlayerName(String playerName, Integer pageNumber);
 
-    long getTotalMatchesByPlayerName(String playerName);
+    long count();
 
-    Match addMatch(Match match);
+    long countByPlayerName(String playerName);
 }

@@ -57,7 +57,7 @@ public class LiveMatchServiceImpl implements LiveMatchService {
         MatchScore currentScore = liveMatchRepository.persist(uuid, matchScore);
 
         log.info("New live match created: : {}", currentScore.toString());
-        log.info("Current size of lives matches: {}", liveMatchRepository.totalLiveMatches());
+        log.info("Current size of lives matches: {}", liveMatchRepository.count());
 
         return uuid;
     }
@@ -65,7 +65,7 @@ public class LiveMatchServiceImpl implements LiveMatchService {
     @Override
     public MatchScoreDto getLiveMatchScore(String matchUuid) {
         UUID uuid = UUID.fromString(matchUuid);
-        return Optional.ofNullable(liveMatchRepository.getByUuid(uuid))
+        return Optional.ofNullable(liveMatchRepository.findByUuid(uuid))
                 .map(matchMapper::matchScoreToDto)
                 .orElseThrow(() -> new MatchScoreException(String.format("Match score not found for id: %s", matchUuid)));
     }
@@ -73,7 +73,7 @@ public class LiveMatchServiceImpl implements LiveMatchService {
     @Override
     public MatchScoreDto handleScoring(String matchId, PlayerNumber playerNumber) {
         UUID uuid = UUID.fromString(matchId);
-        MatchScore matchScore = liveMatchRepository.getByUuid(uuid);
+        MatchScore matchScore = liveMatchRepository.findByUuid(uuid);
 
         if (matchScore == null) {
             throw new MatchScoreException(String.format("Match score not found for id: %s", uuid));
@@ -86,15 +86,15 @@ public class LiveMatchServiceImpl implements LiveMatchService {
         matchScore.processPointWinner(playerNumber);
 
         if (matchScore.isMaxGames()) {
-            MatchScore matchScoreException = liveMatchRepository.remove(uuid);
+            MatchScore matchScoreException = liveMatchRepository.removeByUuid(uuid);
             throw new MaxGamesExceededException(String.format("Maximum number of games. The match reached the limit of games in the set: %s", matchScoreException.toString()));
         }
 
         if (firstPlayerScore.getSets() >= MatchConstants.MAX_SETS_FOR_WIN) {
-            liveMatchRepository.remove(uuid);
+            liveMatchRepository.removeByUuid(uuid);
             return buildFinishedMatchScoreDto(match, PlayerNumber.FIRST, firstPlayerScore, secondPlayerScore);
         } else if (secondPlayerScore.getSets() >= MatchConstants.MAX_SETS_FOR_WIN) {
-            liveMatchRepository.remove(uuid);
+            liveMatchRepository.removeByUuid(uuid);
             return buildFinishedMatchScoreDto(match, PlayerNumber.SECOND, firstPlayerScore, secondPlayerScore);
         }
 

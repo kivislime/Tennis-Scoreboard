@@ -12,7 +12,7 @@ import org.kivislime.tennisscoreboard.util.HibernateUtil;
 import java.util.List;
 
 public class MatchRepositoryImpl implements MatchRepository {
-    public List<Match> getMatches(Integer pageNumber) {
+    public List<Match> findAll(Integer pageNumber) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             int offset = (pageNumber - 1) * PaginationConfig.PAGE_SIZE;
 
@@ -28,7 +28,7 @@ public class MatchRepositoryImpl implements MatchRepository {
     }
 
     @Override
-    public long getTotalMatches() {
+    public long count() {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String hql = "select count(m) from Match m";
             Query<Long> query = session.createQuery(hql, Long.class);
@@ -38,7 +38,7 @@ public class MatchRepositoryImpl implements MatchRepository {
         }
     }
 
-    public List<Match> getMatchesByPlayerName(String playerName, Integer pageNumber) {
+    public List<Match> findByPlayerName(String playerName, Integer pageNumber) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             int offset = (pageNumber - 1) * PaginationConfig.PAGE_SIZE;
 
@@ -62,7 +62,7 @@ public class MatchRepositoryImpl implements MatchRepository {
     }
 
     @Override
-    public long getTotalMatchesByPlayerName(String playerName) {
+    public long countByPlayerName(String playerName) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String hql = "select count(m) from Match m where m.firstPlayer.name = :playerName or m.secondPlayer.name = :playerName";
             Query<Long> query = session.createQuery(hql, Long.class);
@@ -75,7 +75,7 @@ public class MatchRepositoryImpl implements MatchRepository {
         }
     }
 
-    public Match addMatch(Match match) {
+    public Match persist(Match match) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
             session.persist(match);

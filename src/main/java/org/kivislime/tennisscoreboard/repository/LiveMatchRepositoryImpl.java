@@ -10,17 +10,17 @@ public class LiveMatchRepositoryImpl implements LiveMatchRepository {
     private static final Map<UUID, MatchScore> currentMatches = new ConcurrentHashMap<>();
 
     @Override
-    public MatchScore getByUuid(UUID id) {
+    public MatchScore findByUuid(UUID id) {
         return currentMatches.get(id);
     }
 
     @Override
-    public long totalLiveMatches() {
+    public long count() {
         return currentMatches.size();
     }
 
     @Override
-    public MatchScore remove(UUID uuid) {
+    public MatchScore removeByUuid(UUID uuid) {
         MatchScore score = currentMatches.get(uuid);
         currentMatches.remove(uuid);
         return score;

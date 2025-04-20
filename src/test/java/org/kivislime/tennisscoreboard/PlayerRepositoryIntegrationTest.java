@@ -35,7 +35,7 @@ class PlayerRepositoryIntegrationTest {
     @Test
     void addPlayer_shouldPersistNewPlayer() {
         Player player = Player.builder().name("TestPlayer").build();
-        Player savedPlayer = playerRepository.addPlayer(player);
+        Player savedPlayer = playerRepository.persist(player);
 
         assertNotNull(savedPlayer.getId());
         assertEquals("TestPlayer", savedPlayer.getName());
@@ -44,7 +44,7 @@ class PlayerRepositoryIntegrationTest {
     @Test
     void findByName() {
         Player player = Player.builder().name("ExistingPlayer").build();
-        playerRepository.addPlayer(player);
+        playerRepository.persist(player);
 
         var result = playerRepository.findByName("ExistingPlayer");
 

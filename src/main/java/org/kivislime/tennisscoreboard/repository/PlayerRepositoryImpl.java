@@ -23,7 +23,7 @@ public class PlayerRepositoryImpl implements PlayerRepository {
     }
 
     @Override
-    public Player addPlayer(Player player) {
+    public Player persist(Player player) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
             session.persist(player);

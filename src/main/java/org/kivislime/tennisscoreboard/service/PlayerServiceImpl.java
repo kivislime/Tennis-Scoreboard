@@ -19,8 +19,8 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public PlayerDto addPlayer(String playerName) {
-        Player playerResult = playerRepository.addPlayer(Player.builder()
+    public PlayerDto persist(String playerName) {
+        Player playerResult = playerRepository.persist(Player.builder()
                 .name(playerName)
                 .build());
 
@@ -28,20 +28,20 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Optional<PlayerDto> getPlayer(String playerName) {
+    public Optional<PlayerDto> findPlayer(String playerName) {
         return playerRepository.findByName(playerName)
                 .map(playerMapper::playerToDto);
     }
 
     @Override
     public PlayerDto findOrCreatePlayer(String playerName) {
-        Optional<PlayerDto> playerDtoOptional = getPlayer(playerName);
+        Optional<PlayerDto> playerDtoOptional = findPlayer(playerName);
         if (playerDtoOptional.isPresent()) {
             return playerDtoOptional.get();
         }
 
         try {
-            Player player = playerRepository.addPlayer(Player.builder()
+            Player player = playerRepository.persist(Player.builder()
                     .name(playerName)
                     .build());
             return playerMapper.playerToDto(player);
