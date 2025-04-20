@@ -24,7 +24,7 @@ public class MatchesListServlet extends HttpServlet {
     @Override
     public void init() {
         ServletContext context = getServletContext();
-        matchQueryService = (MatchQueryService) context.getAttribute("matchService");
+        matchQueryService = (MatchQueryService) context.getAttribute("matchQueryService");
     }
 
     @Override

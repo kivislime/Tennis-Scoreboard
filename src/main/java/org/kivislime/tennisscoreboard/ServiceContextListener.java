@@ -21,7 +21,7 @@ public class ServiceContextListener implements ServletContextListener {
         LiveMatchService liveMatchService = new LiveMatchServiceImpl(playerService, finishedMatchService, liveMatchRepository);
 
         ServletContext context = sce.getServletContext();
-        context.setAttribute("matchService", matchServiceImpl);
+        context.setAttribute("matchQueryService", matchServiceImpl);
         context.setAttribute("liveMatchService", liveMatchService);
     }
 }

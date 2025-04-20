@@ -42,7 +42,7 @@ public class MatchesListServletTest {
         MockitoAnnotations.openMocks(this);
 
         when(servletConfig.getServletContext()).thenReturn(servletContext);
-        when(servletContext.getAttribute("matchService")).thenReturn(matchQueryService);
+        when(servletContext.getAttribute("matchQueryService")).thenReturn(matchQueryService);
 
         servletUnderTest = new MatchesListServlet();
         servletUnderTest.init(servletConfig);
