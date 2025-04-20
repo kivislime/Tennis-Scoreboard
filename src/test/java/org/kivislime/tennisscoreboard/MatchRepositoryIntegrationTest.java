@@ -4,11 +4,11 @@ import org.hibernate.Session;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.kivislime.tennisscoreboard.domain.Match;
 import org.kivislime.tennisscoreboard.config.PaginationConfig;
+import org.kivislime.tennisscoreboard.domain.Match;
+import org.kivislime.tennisscoreboard.domain.Player;
 import org.kivislime.tennisscoreboard.repository.MatchRepository;
 import org.kivislime.tennisscoreboard.repository.MatchRepositoryImpl;
-import org.kivislime.tennisscoreboard.domain.Player;
 import org.kivislime.tennisscoreboard.util.HibernateUtil;
 
 import java.util.List;

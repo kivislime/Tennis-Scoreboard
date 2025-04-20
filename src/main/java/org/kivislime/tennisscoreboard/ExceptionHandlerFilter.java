@@ -3,11 +3,7 @@ package org.kivislime.tennisscoreboard;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.kivislime.tennisscoreboard.exception.MatchRepositoryException;
-import org.kivislime.tennisscoreboard.exception.MatchScoreException;
-import org.kivislime.tennisscoreboard.exception.MatchesNotFoundException;
-import org.kivislime.tennisscoreboard.exception.MaxGamesExceededException;
-import org.kivislime.tennisscoreboard.exception.PlayerRepositoryException;
+import org.kivislime.tennisscoreboard.exception.*;
 import org.kivislime.tennisscoreboard.util.ServletUtil;
 
 import java.io.IOException;
