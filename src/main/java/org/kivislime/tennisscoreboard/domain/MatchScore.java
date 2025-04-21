@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.kivislime.tennisscoreboard.dto.MatchDto;
 
 import static org.kivislime.tennisscoreboard.config.MatchConstants.*;
 
@@ -15,7 +14,7 @@ import static org.kivislime.tennisscoreboard.config.MatchConstants.*;
 public final class MatchScore {
     private final PlayerScore firstPlayerScore;
     private final PlayerScore secondPlayerScore;
-    private final MatchDto matchDto;
+    private final Match match;
 
     public void processPointWinner(PlayerNumber numWinnerPoint) {
         if (isTieBreak()) {

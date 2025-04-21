@@ -167,24 +167,24 @@
     const uuid = params.get("uuid");
 
     function updateScoreboard(data) {
-        const {firstPlayerScore, secondPlayerScore, matchDto} = data;
+        const {firstPlayerScore, secondPlayerScore, match} = data;
 
-        document.getElementById("player1Name").textContent = `\${matchDto.firstPlayer.name}`;
+        document.getElementById("player1Name").textContent = `\${match.firstPlayer.name}`;
         document.getElementById("player1Sets").textContent = `\${firstPlayerScore.sets}`;
         document.getElementById("player1Games").textContent = `\${firstPlayerScore.games}`;
         document.getElementById("player1Points").textContent =
             firstPlayerScore.points === -1 ? "AD" : firstPlayerScore.points;
 
-        document.getElementById("player2Name").textContent = `\${matchDto.secondPlayer.name}`;
+        document.getElementById("player2Name").textContent = `\${match.secondPlayer.name}`;
         document.getElementById("player2Sets").textContent = `\${secondPlayerScore.sets}`;
         document.getElementById("player2Games").textContent = `\${secondPlayerScore.games}`;
         document.getElementById("player2Points").textContent =
             secondPlayerScore.points === -1 ? "AD" : secondPlayerScore.points;
 
-        if (matchDto.winnerPlayer) {
+        if (match.winnerPlayer) {
             document.querySelectorAll(".score-table button").forEach(btn => btn.disabled = true);
             document.getElementById("matchStatus").innerHTML = `
-                <p>Match completed. Winner: \${matchDto.winnerPlayer.name}</p>
+                <p>Match completed. Winner: \${match.winnerPlayer.name}</p>
                 <a href="index.jsp"><button>Go to Home</button></a>
             `;
         }

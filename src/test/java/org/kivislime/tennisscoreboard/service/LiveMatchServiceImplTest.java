@@ -3,10 +3,9 @@ package org.kivislime.tennisscoreboard.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kivislime.tennisscoreboard.config.MatchConstants;
-import org.kivislime.tennisscoreboard.domain.MatchScore;
-import org.kivislime.tennisscoreboard.domain.PlayerNumber;
-import org.kivislime.tennisscoreboard.domain.PlayerScore;
+import org.kivislime.tennisscoreboard.domain.*;
 import org.kivislime.tennisscoreboard.dto.MatchDto;
+import org.kivislime.tennisscoreboard.dto.MatchScoreDto;
 import org.kivislime.tennisscoreboard.dto.PlayerDto;
 import org.kivislime.tennisscoreboard.exception.MatchScoreException;
 import org.kivislime.tennisscoreboard.exception.MaxGamesExceededException;
@@ -15,6 +14,7 @@ import org.kivislime.tennisscoreboard.repository.LiveMatchRepository;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class LiveMatchServiceImplTest {
@@ -22,7 +22,6 @@ class LiveMatchServiceImplTest {
     private PlayerService playerService;
     private FinishedMatchService finishedMatchService;
     private LiveMatchRepository liveMatchRepository;
-
     private LiveMatchServiceImpl liveMatchService;
 
     @BeforeEach
@@ -35,9 +34,8 @@ class LiveMatchServiceImplTest {
 
     @Test
     void createLiveMatchSession_shouldReturnUuid() {
-
-        when(liveMatchRepository.persist(any(), any()))
-                .thenAnswer(invocation -> invocation.getArgument(1)); // возвращаем матч как есть
+        when(liveMatchRepository.persist(any(UUID.class), any(MatchScore.class)))
+                .thenAnswer(inv -> inv.getArgument(1));
 
         UUID uuid = liveMatchService.createLiveMatchSession("Alice", "Bob");
 
@@ -47,22 +45,25 @@ class LiveMatchServiceImplTest {
     @Test
     void getLiveMatchScore_shouldReturnDto() {
         UUID matchId = UUID.randomUUID();
+        Player p1 = Player.builder().name("A").build();
+        Player p2 = Player.builder().name("B").build();
+        Match domainMatch = Match.builder()
+                .firstPlayer(p1)
+                .secondPlayer(p2)
+                .build();
 
         MatchScore matchScore = MatchScore.builder()
                 .firstPlayerScore(new PlayerScore())
                 .secondPlayerScore(new PlayerScore())
-                .matchDto(MatchDto.builder()
-                        .firstPlayer(PlayerDto.builder().name("A").build())
-                        .secondPlayer(PlayerDto.builder().name("B").build())
-                        .build())
+                .match(domainMatch)
                 .build();
 
         when(liveMatchRepository.findByUuid(matchId)).thenReturn(matchScore);
 
-        var result = liveMatchService.getLiveMatchScore(matchId.toString());
+        MatchScoreDto result = liveMatchService.getLiveMatchScore(matchId.toString());
 
         assertNotNull(result);
-        assertEquals("A", result.getMatchDto().getFirstPlayer().getName());
+        assertEquals("A", result.getMatch().getFirstPlayer().getName());
     }
 
     @Test
@@ -89,19 +90,17 @@ class LiveMatchServiceImplTest {
 
         PlayerScore first = new PlayerScore();
         PlayerScore second = new PlayerScore();
-
         for (int i = 0; i <= MatchConstants.MAX_GAMES_IN_SET; i++) {
             first.winGame();
             second.winGame();
         }
 
-        MatchDto dto = MatchDto.builder()
-                .firstPlayer(PlayerDto.builder().name("Alice").build())
-                .secondPlayer(PlayerDto.builder().name("Bob").build())
-                .build();
+        Player p1 = Player.builder().name("Alice").build();
+        Player p2 = Player.builder().name("Bob").build();
+        Match domainMatch = Match.builder().firstPlayer(p1).secondPlayer(p2).build();
 
         MatchScore matchScore = MatchScore.builder()
-                .matchDto(dto)
+                .match(domainMatch)
                 .firstPlayerScore(first)
                 .secondPlayerScore(second)
                 .build();
@@ -109,37 +108,41 @@ class LiveMatchServiceImplTest {
         when(liveMatchRepository.findByUuid(id)).thenReturn(matchScore);
         when(liveMatchRepository.removeByUuid(id)).thenReturn(matchScore);
 
-        assertThrows(MaxGamesExceededException.class, () ->
-                liveMatchService.handleScoring(id.toString(), PlayerNumber.FIRST)
-        );
+        assertThrows(MaxGamesExceededException.class,
+                () -> liveMatchService.handleScoring(id.toString(), PlayerNumber.FIRST));
     }
 
     @Test
     void handleScoring_shouldReturnFinishedMatch_whenFirstPlayerWins() {
         UUID id = UUID.randomUUID();
 
-        MatchDto dto = MatchDto.builder()
-                .firstPlayer(PlayerDto.builder().name("A").build())
-                .secondPlayer(PlayerDto.builder().name("B").build())
-                .build();
-
         PlayerScore firstScore = new PlayerScore();
         firstScore.winSet();
         firstScore.winSet();
         PlayerScore secondScore = new PlayerScore();
 
+        Player p1 = Player.builder().name("A").build();
+        Player p2 = Player.builder().name("B").build();
+        Match domainMatch = Match.builder().firstPlayer(p1).secondPlayer(p2).build();
+
         MatchScore matchScore = MatchScore.builder()
-                .matchDto(dto)
+                .match(domainMatch)
                 .firstPlayerScore(firstScore)
                 .secondPlayerScore(secondScore)
                 .build();
 
         when(liveMatchRepository.findByUuid(id)).thenReturn(matchScore);
-        when(finishedMatchService.persistFinishedMatch(any())).thenReturn(dto);
+        MatchDto savedDto = MatchDto.builder()
+                .firstPlayer(PlayerDto.builder().name("A").build())
+                .secondPlayer(PlayerDto.builder().name("B").build())
+                .winnerPlayer(PlayerDto.builder().name("A").build())
+                .build();
+        when(finishedMatchService.persistFinishedMatch(any())).thenReturn(savedDto);
 
         var result = liveMatchService.handleScoring(id.toString(), PlayerNumber.FIRST);
 
-        assertNotNull(result.getMatchDto());
+        assertNotNull(result.getMatch());
+        assertEquals("A", result.getMatch().getWinnerPlayer().getName());
         verify(liveMatchRepository).removeByUuid(id);
     }
 }

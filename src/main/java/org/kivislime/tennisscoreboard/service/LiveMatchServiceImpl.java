@@ -2,9 +2,7 @@ package org.kivislime.tennisscoreboard.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.kivislime.tennisscoreboard.config.MatchConstants;
-import org.kivislime.tennisscoreboard.domain.MatchScore;
-import org.kivislime.tennisscoreboard.domain.PlayerNumber;
-import org.kivislime.tennisscoreboard.domain.PlayerScore;
+import org.kivislime.tennisscoreboard.domain.*;
 import org.kivislime.tennisscoreboard.dto.MatchDto;
 import org.kivislime.tennisscoreboard.dto.MatchScoreDto;
 import org.kivislime.tennisscoreboard.dto.PlayerDto;
@@ -34,24 +32,25 @@ public class LiveMatchServiceImpl implements LiveMatchService {
 
     @Override
     public UUID createLiveMatchSession(String firstPlayerName, String secondPlayerName) {
-        PlayerDto firstPlayerDto = PlayerDto.builder()
+        Player firstPlayerDto = Player.builder()
                 .name(firstPlayerName)
                 .build();
 
-        PlayerDto secondPlayerDto = PlayerDto.builder()
+        Player secondPlayerDto = Player.builder()
                 .name(secondPlayerName)
                 .build();
 
         UUID uuid = UUID.randomUUID();
 
-        MatchDto newMatch = MatchDto.builder()
+        Match newMatch = Match.builder()
                 .firstPlayer(firstPlayerDto)
                 .secondPlayer(secondPlayerDto)
                 .build();
 
-        MatchScore matchScore = MatchScore.builder().firstPlayerScore(new PlayerScore())
+        MatchScore matchScore = MatchScore.builder()
+                .firstPlayerScore(new PlayerScore())
                 .secondPlayerScore(new PlayerScore())
-                .matchDto(newMatch)
+                .match(newMatch)
                 .build();
 
         MatchScore currentScore = liveMatchRepository.persist(uuid, matchScore);
@@ -79,7 +78,7 @@ public class LiveMatchServiceImpl implements LiveMatchService {
             throw new MatchScoreException(String.format("Match score not found for id: %s", uuid));
         }
 
-        MatchDto match = matchScore.getMatchDto();
+        Match match = matchScore.getMatch();
         PlayerScore firstPlayerScore = matchScore.getFirstPlayerScore();
         PlayerScore secondPlayerScore = matchScore.getSecondPlayerScore();
 
@@ -101,7 +100,7 @@ public class LiveMatchServiceImpl implements LiveMatchService {
         return matchMapper.matchScoreToDto(matchScore);
     }
 
-    private MatchScoreDto buildFinishedMatchScoreDto(MatchDto match, PlayerNumber winner, PlayerScore first, PlayerScore second) {
+    private MatchScoreDto buildFinishedMatchScoreDto(Match match, PlayerNumber winner, PlayerScore first, PlayerScore second) {
 
         PlayerDto firstPlayer = playerService.findOrCreatePlayer(match.getFirstPlayer().getName());
         PlayerDto secondPlayer = playerService.findOrCreatePlayer(match.getSecondPlayer().getName());
@@ -113,7 +112,7 @@ public class LiveMatchServiceImpl implements LiveMatchService {
                 .build());
 
         return MatchScoreDto.builder()
-                .matchDto(resultMatch)
+                .match(resultMatch)
                 .firstPlayerScore(playerScoreMapper.playerScoreToDto(first))
                 .secondPlayerScore(playerScoreMapper.playerScoreToDto(second))
                 .build();

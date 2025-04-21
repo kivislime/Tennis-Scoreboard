@@ -8,7 +8,7 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @Jacksonized
 public class MatchScoreDto {
-    MatchDto matchDto;
+    MatchDto match;
     PlayerScoreDto firstPlayerScore;
     PlayerScoreDto secondPlayerScore;
 }
