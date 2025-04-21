@@ -8,6 +8,8 @@ public class PlayerScore {
     private Integer games;
     private Point points;
 
+    private int tieBreakPoints;
+
     public PlayerScore() {
         this.sets = 0;
         this.games = 0;
@@ -18,15 +20,21 @@ public class PlayerScore {
         points = points.next();
     }
 
+    public void winTieBreakPoint() {
+        tieBreakPoints++;
+    }
+
     public void winGame() {
         ++games;
         points = Point.ZERO;
+        tieBreakPoints = 0;
     }
 
     public void winSet() {
         ++sets;
         games = 0;
         points = Point.ZERO;
+        tieBreakPoints = 0;
     }
 
     public void loseGame() {
@@ -36,6 +44,7 @@ public class PlayerScore {
     public void loseSet() {
         games = 0;
         points = Point.ZERO;
+        tieBreakPoints = 0;
     }
 
     public void setAdvantage() {
@@ -50,5 +59,11 @@ public class PlayerScore {
 
     public boolean hasAdvantage() {
         return points == Point.ADVANTAGE;
+    }
+
+    //Using in PlayerScoreMapper
+    public int getDisplayPoints() {
+        boolean isTieBreak = this.tieBreakPoints > 0;
+        return isTieBreak ? this.tieBreakPoints : this.points.getValue();
     }
 }

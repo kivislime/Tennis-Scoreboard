@@ -10,6 +10,6 @@ import org.mapstruct.factory.Mappers;
 public interface PlayerScoreMapper {
     PlayerScoreMapper INSTANCE = Mappers.getMapper(PlayerScoreMapper.class);
 
-    @Mapping(source = "points.value", target = "points")
+    @Mapping(target = "points", expression = "java(playerScore.getDisplayPoints())")
     PlayerScoreDto playerScoreToDto(PlayerScore playerScore);
 }

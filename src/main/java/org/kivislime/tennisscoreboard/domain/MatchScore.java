@@ -18,12 +18,12 @@ public final class MatchScore {
     private final MatchDto matchDto;
 
     public void processPointWinner(PlayerNumber numWinnerPoint) {
-
-        if (numWinnerPoint == PlayerNumber.FIRST) {
-            processPoints(firstPlayerScore, secondPlayerScore);
-        } else {
-            processPoints(secondPlayerScore, firstPlayerScore);
+        if (isTieBreak()) {
+            processTieBreakPoints(numWinnerPoint);
+            return;
         }
+
+        processPoints(numWinnerPoint);
 
         if (isSetWon(firstPlayerScore, secondPlayerScore)) {
             firstPlayerScore.winSet();
@@ -34,7 +34,23 @@ public final class MatchScore {
         }
     }
 
-    private void processPoints(PlayerScore winner, PlayerScore loser) {
+    private void processTieBreakPoints(PlayerNumber numWinnerPoint) {
+        PlayerScore winner = PlayerNumber.FIRST == numWinnerPoint ? firstPlayerScore : secondPlayerScore;
+        PlayerScore loser = PlayerNumber.FIRST == numWinnerPoint ? secondPlayerScore : firstPlayerScore;
+
+        winner.winTieBreakPoint();
+
+        if (winner.getTieBreakPoints() >= TIE_BREAK_WIN_POINTS &&
+                winner.getTieBreakPoints() - loser.getTieBreakPoints() >= 2) {
+            winner.winSet();
+            loser.loseSet();
+        }
+    }
+
+    private void processPoints(PlayerNumber numWinnerPoint) {
+        PlayerScore winner = PlayerNumber.FIRST == numWinnerPoint ? firstPlayerScore : secondPlayerScore;
+        PlayerScore loser = PlayerNumber.FIRST == numWinnerPoint ? secondPlayerScore : firstPlayerScore;
+
         if (winner.hasAdvantage()) {
             winner.winGame();
             loser.loseGame();
@@ -60,12 +76,16 @@ public final class MatchScore {
         winner.winPoint();
     }
 
-    private boolean isSetWon(PlayerScore player, PlayerScore opponent) {
-        return player.getGames() >= GAMES_BEFORE_TIE_BREAK &&
-                player.getGames() - opponent.getGames() >= GAMES_DIFFERENCE_TO_WIN_SET;
+    public boolean isTieBreak() {
+        return firstPlayerScore.getGames() == GAMES_BEFORE_TIE_BREAK && secondPlayerScore.getGames() == GAMES_BEFORE_TIE_BREAK;
     }
 
     public boolean isMaxGames() {
         return firstPlayerScore.getGames() > MAX_GAMES_IN_SET && secondPlayerScore.getGames() > MAX_GAMES_IN_SET;
+    }
+
+    private boolean isSetWon(PlayerScore player, PlayerScore opponent) {
+        return player.getGames() >= GAMES_BEFORE_TIE_BREAK &&
+                player.getGames() - opponent.getGames() >= GAMES_DIFFERENCE_TO_WIN_SET;
     }
 }
