@@ -57,25 +57,27 @@ public class MatchScoreServlet extends HttpServlet {
             return;
         }
 
+        int playerNumberInt;
         try {
-            int playerNumberInt = Integer.parseInt(playerNumberStr);
-            Optional<PlayerNumber> playerNumberOptional = PlayerNumber.fromInt(playerNumberInt);
-            if (playerNumberOptional.isEmpty()) {
-                ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Invalid player number, must be 1 or 2.");
-                ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
-                return;
-            }
-            PlayerNumber playerNumber = playerNumberOptional.get();
-
-            MatchScoreDto matchScoreDto = liveMatchService.handleScoring(matchId, playerNumber);
-            String matchScoreJson = JsonUtil.toJson(matchScoreDto);
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getWriter().write(matchScoreJson);
-
+            playerNumberInt = Integer.parseInt(playerNumberStr);
         } catch (NumberFormatException e) {
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Invalid player number,  must be 1 or 2.");
             ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
+            return;
         }
 
+        Optional<PlayerNumber> playerNumberOptional = PlayerNumber.fromInt(playerNumberInt);
+        if (playerNumberOptional.isEmpty()) {
+            ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "Invalid player number, must be 1 or 2.");
+            ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
+            return;
+        }
+        PlayerNumber playerNumber = playerNumberOptional.get();
+
+        MatchScoreDto matchScoreDto = liveMatchService.handleScoring(matchId, playerNumber);
+        String matchScoreJson = JsonUtil.toJson(matchScoreDto);
+
+        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.getWriter().write(matchScoreJson);
     }
 }
