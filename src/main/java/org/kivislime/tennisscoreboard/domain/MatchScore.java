@@ -40,7 +40,7 @@ public final class MatchScore {
         winner.winTieBreakPoint();
 
         if (winner.getTieBreakPoints() >= TIE_BREAK_WIN_POINTS &&
-                winner.getTieBreakPoints() - loser.getTieBreakPoints() >= 2) {
+                winner.getTieBreakPoints() - loser.getTieBreakPoints() >= POINTS_DIFFERENCE_TO_WIN_GAME) {
             winner.winSet();
             loser.loseSet();
         }

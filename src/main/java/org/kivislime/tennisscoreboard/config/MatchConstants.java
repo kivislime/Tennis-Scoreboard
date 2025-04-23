@@ -4,6 +4,7 @@ public class MatchConstants {
     private MatchConstants() {
     }
 
+    public static final int POINTS_DIFFERENCE_TO_WIN_GAME = 2;
     public static final int GAMES_DIFFERENCE_TO_WIN_SET = 2;
     public static final int GAMES_BEFORE_TIE_BREAK = 6;
     public static final int TIE_BREAK_WIN_POINTS = 6;
