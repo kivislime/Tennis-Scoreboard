@@ -51,13 +51,13 @@ public class MatchesListServlet extends HttpServlet {
         if (ValidatorUtil.isValidName(playerName)) {
             totalPages = matchQueryService.countPagesByPlayer(playerName);
             matchDtoList = matchQueryService.findMatchesByPlayer(playerName, pageNumber);
-        } else if (ValidatorUtil.isValidParameter(playerName)) {
+        } else if (!ValidatorUtil.isValidParameter(playerName)) {
+            totalPages = matchQueryService.countPages();
+            matchDtoList = matchQueryService.findMatches(pageNumber);
+        } else {
             ErrorResponse errorResponse = new ErrorResponse("INVALID_PARAMETER", "The length of the name must be more than 2, but less than 16 and consist only of Latin letters.");
             ServletUtil.sendJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, errorResponse);
             return;
-        } else {
-            totalPages = matchQueryService.countPages();
-            matchDtoList = matchQueryService.findMatches(pageNumber);
         }
 
         Map<String, Object> responseData = new HashMap<>();
