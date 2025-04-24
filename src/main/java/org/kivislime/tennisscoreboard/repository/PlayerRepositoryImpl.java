@@ -2,6 +2,7 @@ package org.kivislime.tennisscoreboard.repository;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.exception.ConstraintViolationException;
 import org.kivislime.tennisscoreboard.domain.Player;
 import org.kivislime.tennisscoreboard.exception.PlayerRepositoryException;
 import org.kivislime.tennisscoreboard.util.HibernateUtil;
@@ -29,6 +30,8 @@ public class PlayerRepositoryImpl implements PlayerRepository {
             session.persist(player);
             session.getTransaction().commit();
             return player;
+        } catch (ConstraintViolationException e) {
+            throw e;
         } catch (HibernateException e) {
             throw new PlayerRepositoryException(String.format("Error when adding player by name: %s", player.getName()), e);
         }
