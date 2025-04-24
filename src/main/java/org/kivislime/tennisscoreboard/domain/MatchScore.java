@@ -33,6 +33,14 @@ public final class MatchScore {
         }
     }
 
+    public boolean isTieBreak() {
+        return firstPlayerScore.getGames() == GAMES_BEFORE_TIE_BREAK && secondPlayerScore.getGames() == GAMES_BEFORE_TIE_BREAK;
+    }
+
+    public boolean isMaxGames() {
+        return firstPlayerScore.getGames() > MAX_GAMES_IN_SET && secondPlayerScore.getGames() > MAX_GAMES_IN_SET;
+    }
+
     private void processTieBreakPoints(PlayerNumber numWinnerPoint) {
         PlayerScore winner = PlayerNumber.FIRST == numWinnerPoint ? firstPlayerScore : secondPlayerScore;
         PlayerScore loser = PlayerNumber.FIRST == numWinnerPoint ? secondPlayerScore : firstPlayerScore;
@@ -73,14 +81,6 @@ public final class MatchScore {
         }
 
         winner.winPoint();
-    }
-
-    public boolean isTieBreak() {
-        return firstPlayerScore.getGames() == GAMES_BEFORE_TIE_BREAK && secondPlayerScore.getGames() == GAMES_BEFORE_TIE_BREAK;
-    }
-
-    public boolean isMaxGames() {
-        return firstPlayerScore.getGames() > MAX_GAMES_IN_SET && secondPlayerScore.getGames() > MAX_GAMES_IN_SET;
     }
 
     private boolean isSetWon(PlayerScore player, PlayerScore opponent) {
