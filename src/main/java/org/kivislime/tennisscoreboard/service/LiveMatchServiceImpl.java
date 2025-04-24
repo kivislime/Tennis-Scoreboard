@@ -32,19 +32,19 @@ public class LiveMatchServiceImpl implements LiveMatchService {
 
     @Override
     public UUID createLiveMatchSession(String firstPlayerName, String secondPlayerName) {
-        Player firstPlayerDto = Player.builder()
+        Player firstPlayer = Player.builder()
                 .name(firstPlayerName)
                 .build();
 
-        Player secondPlayerDto = Player.builder()
+        Player secondPlayer = Player.builder()
                 .name(secondPlayerName)
                 .build();
 
         UUID uuid = UUID.randomUUID();
 
         Match newMatch = Match.builder()
-                .firstPlayer(firstPlayerDto)
-                .secondPlayer(secondPlayerDto)
+                .firstPlayer(firstPlayer)
+                .secondPlayer(secondPlayer)
                 .build();
 
         MatchScore matchScore = MatchScore.builder()
