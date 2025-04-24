@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-IMAGE=kivislime/org/tennis-scoreboard:$(git rev-parse --short HEAD)
+IMAGE=kivislime/tennis-scoreboard:$(git rev-parse --short HEAD)
 
 docker build -t "$IMAGE" .
 
